@@ -30,6 +30,7 @@ export const Contact = ({ deleteContact }: IProps) => {
 		axios.get(`http://localhost:5000/persons/${id}`).then((res) => {
 			const { data } = res;
 			console.log(data);
+			localStorage.setItem('current-contact', String(id));
 			setCurrentContact(data.contact);
 		});
 	}, []);
@@ -49,7 +50,7 @@ export const Contact = ({ deleteContact }: IProps) => {
 						<FA name='edit' size='lg' />
 					</button>
 					<button
-						onClick={() => handleDeleteContact(id)}
+						onClick={() => handleDeleteContact(currentContact.id)}
 						className='text-red-500 hover:text-red-400 px-4'
 					>
 						<FA name='trash' size='lg' />

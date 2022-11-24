@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 
 import { InputField } from '../components/InputField';
 
@@ -33,11 +33,15 @@ export const AddressForm = ({
 	editing,
 	setEditing,
 }: IProps) => {
+	const cityRef = useRef(null);
+	const stateRef = useRef(null);
 	const [zipLookup, setZipLookup] = useState<ZipLookup>({
 		city: '',
 		state: '',
 		zip: '',
 	});
+	console.log(zipLookup);
+	console.log(address);
 	const [zipFound, setZipFound] = useState(false);
 
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -48,7 +52,12 @@ export const AddressForm = ({
 					console.error(err);
 				} else {
 					const { city, state, zip } = result;
-					setZipLookup({ city, state, zip });
+					setAddress((prev) => ({
+						...prev,
+						city,
+						stateInitials: state,
+						zipCode: zip,
+					}));
 					setZipFound(true);
 				}
 			});
@@ -98,7 +107,7 @@ export const AddressForm = ({
 				placeholder='Zip Code'
 				id='zipCode'
 				name='zipCode'
-				value={address.zipCode || zipLookup.zip}
+				value={address.zipCode}
 				handleChange={handleChange}
 				type='text'
 			/>

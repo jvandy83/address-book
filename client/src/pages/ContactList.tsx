@@ -5,7 +5,6 @@ import { useNavigate } from 'react-router-dom';
 import { AddressBook } from '../components/AddressBook';
 
 import { ContactsWithAddresses } from '../../types/ContactWithAddress';
-import { Matches } from '../../types/SearchResultsForContacts';
 
 interface IProps {
 	contacts: ContactsWithAddresses;
@@ -22,7 +21,6 @@ export const ContactList = ({
 	searchResults,
 	setSearchResults,
 }: IProps) => {
-	console.log(searchResults);
 	const navigate = useNavigate();
 	const renderHeaders = () => {
 		return (

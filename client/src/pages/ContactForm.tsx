@@ -38,8 +38,6 @@ export const ContactForm = ({
 		}));
 	};
 
-	console.log(editing);
-
 	return (
 		<Form>
 			<SubmitButton submitAndSave={handleSubmitAndSave} editing={editing} />

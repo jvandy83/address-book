@@ -79,6 +79,7 @@ export const App = () => {
 	const navigate = useNavigate();
 	// address state
 	const [address, setAddress] = useState(initialAddressState);
+	console.log(address);
 	const [updatedAddress, setUpdatedAddress] = useState(initialAddressState);
 	// contact state
 	const [contact, setContact] = useState(initialContactState);
@@ -108,33 +109,37 @@ export const App = () => {
 					},
 				},
 			);
+			console.log(data);
 			localStorage.setItem('new-contact', String(data['contact'].id));
 			setContactForm(initialContactFormState);
 			setEditing(false);
+			return data;
 		} catch (error) {
 			console.error(error);
 		}
 	};
 
-	const handleSubmitAndSaveContact = () => {
-		createContact(contactForm);
-		setStatus((prev) => ({
-			...prev,
-			submittingContact: true,
-		}));
-		setContactForm(initialContactFormState);
-		setEditing(false);
-		navigate(`/contact/${currentContact.id}`);
+	const handleSubmitAndSaveContact = async () => {
+		try {
+			const data = await createContact(contactForm);
+			setStatus((prev) => ({
+				...prev,
+				submittingContact: true,
+			}));
+			navigate(`/contact/${data.contact.id}`);
+		} catch (error) {
+			console.error(error);
+		}
 	};
 
-	const handleSubmitAndRedirectToAddress = () => {
-		const newContactId = JSON.parse(localStorage.getItem('new_contact')!);
-		createContact(contactForm);
+	const handleSubmitAndRedirectToAddress = async () => {
+		await createContact(contactForm);
 		setStatus((prev) => ({
 			...prev,
 			enteringAddress: true,
 		}));
 		setEditing(false);
+		const newContactId = JSON.parse(localStorage.getItem('new-contact')!);
 		navigate(`/address-form/${newContactId}`);
 	};
 
@@ -182,6 +187,8 @@ export const App = () => {
 	};
 
 	const deleteContact = async (id) => {
+		localStorage.removeItem('current-contact');
+		localStorage.removeItem('new-contact');
 		try {
 			await axios.delete(`http://localhost:5000/person/${id}`);
 		} catch (err) {
@@ -235,7 +242,26 @@ export const App = () => {
 			);
 			console.log(data);
 			if (!data.address) {
-				createAddress(updatedAddress);
+				try {
+					axios.post(
+						`http://localhost:5000/address/${currentContact.id}`,
+						{
+							...updatedAddress,
+							state: convertedStateInitialsToName,
+							personId: currentContact.id,
+						},
+						{
+							headers: {
+								'Content-Type': 'application/json',
+							},
+						},
+					);
+					setAddress(initialAddressState);
+					setEditing(false);
+					navigate(`/contact/${currentContact.id}`);
+				} catch (err) {
+					console.error(err);
+				}
 			} else {
 				axios
 					.put(
@@ -262,15 +288,18 @@ export const App = () => {
 	};
 
 	useEffect(() => {
-		const currentUserId = JSON.parse(localStorage.getItem('current-contact')!);
-		currentUserId &&
+		const currentContactId = JSON.parse(
+			localStorage.getItem('current-contact')!,
+		);
+		console.log('***currentContactId***', currentContactId);
+		currentContactId &&
 			axios
-				.get(`http://localhost:5000/persons/${currentUserId}`)
+				.get(`http://localhost:5000/persons/${currentContactId}`)
 				.then((res) => {
 					const { data } = res;
 					setCurrentContact(data.contact);
 				});
-	}, []);
+	}, [JSON.parse(localStorage.getItem('current-contact')!)]);
 
 	return (
 		<Routes>

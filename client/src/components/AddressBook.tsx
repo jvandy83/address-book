@@ -40,7 +40,7 @@ export const AddressBook = ({ children, setSearchResults }: IProps) => {
 
 	const clearSearchResults = () => {
 		setSearchString('');
-		setSearchResults([]);
+		setSearchResults && setSearchResults([]);
 	};
 
 	useEffect(() => {

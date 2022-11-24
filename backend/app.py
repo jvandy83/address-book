@@ -1,8 +1,8 @@
-from flask import Flask, request
+from flask import Flask, request, make_response
+
+from sqlalchemy import or_, and_, outerjoin
 
 from functools import reduce
-
-from pprint import pprint
 
 from flask_cors import CORS
 
@@ -35,43 +35,49 @@ def index():
 # GET /persons
 @app.route("/persons")
 def find_persons():
-  
-  persons = db.session.query(Person).join(Address, Person.address == None).order_by(Person.first_name).all()
-  rows = db.session.query(Person, Address).join(Address).order_by(Person.first_name).all()
 
-  results = []
-  for row in rows:
-    merged = reduce(lambda x, y: dict(x, **y), (row[0].to_dict(), row[1].to_dict()))
-    results.append(merged)
+  persons = db.session.query(Person, Address).outerjoin(Address).order_by().all()
 
-  for person in persons:
-    results.append(person.to_dict())
+  print(persons)
 
-  print(results)
+  if persons is not None:
 
-  return { 'contacts': results }
+    results = []
 
-# GET /person/<id>
+    for person in persons:
+
+      contact, address = person[0], person[1]
+
+      address = address.to_dict() if address is not None else {}
+
+      results.append({**contact.to_dict(), **address })
+
+    return { 'msg': 'ok', 'contacts': results }
+
+  else:
+
+    return { 'msg': 'not found', 'contacts': [] }
+
+# GET /persons/<id>
 @app.route("/persons/<id>")
 def find_person(id):
-  person = Person.query.get(id) 
-  address = Address.query.filter(Address.person_id == id).first()
-  # person = Person.query.get(id)
 
-  result = {}
+  # person = db.session.query(Person, Address).outerjoin(Address, or_(Person.id == Address.person_id, Person.address == None))
 
-  if address is not None:
-    result = reduce(lambda x, y: dict(x, **y), (person.to_dict(), address.to_dict()))
-  else:
-    result = person.to_dict()
+  person = db.session.query(Person, Address).filter(Person.id == id).outerjoin(Address).first()
 
-  print(result)
 
-  return { 'contact': result }
+  contact, address = person[0], person[1]
+
+  address = address.to_dict() if address is not None else {}
+
+  # return { 'contact': {} }
+  return {'msg': 'ok', 'contact': { **contact.to_dict(), **address } }
 
 # POST /person
 @app.route("/person", methods = ['POST'])
 def create_person():
+  print(request.json)
   create_or_update = convert_person_to_snake_case(request.json)
 
   person = create_or_update['create'](Person)
@@ -124,7 +130,7 @@ def find_address(id):
 def create_address(id):
   print('****REQUEST.JSON***** ', request.json)
 
-  create_or_update = convert_address_to_snake_case(request.json)
+  create_or_update = convert_address_to_snake_case(request.json, id)
 
   address = create_or_update['create'](Address)
 
@@ -139,15 +145,14 @@ def update_address(id):
 
   print('***REQUEST_JSON***', request.json)
 
-  create_or_update = convert_address_to_snake_case(request.json)
+  create_or_update = convert_address_to_snake_case(request.json, id)
 
   updates = create_or_update['updates']
 
   print('****UPDATES****', updates)
 
-  address = db.session.query(Address).filter(Address.person_id == id).update(updates)
+  db.session.query(Address).filter(Address.person_id == id).update(updates)
 
-  print('****ADDRESS****', address)
   commit()
 
 
