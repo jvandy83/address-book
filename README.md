@@ -2,7 +2,27 @@
 
 ## Back-end Python-Flask App
 
-Activate virtual environment:
+### For Docker development:
+
+1. Create SQLite tables
+
+Open your python/flask repl:
+
+    > flask shell
+
+    >>> from db import
+
+    >>> db db.create_all()
+    >>> exit()
+
+2.  Build and start docker container:
+
+        > docker-compose build
+        > docker-compose up
+
+### For development without Docker
+
+Activate virtual environment
 
 For bash shell users:
 
@@ -53,12 +73,19 @@ Start development server:
 
 ## Warning, be gentle with this app!!! (LOL)
 
-In order for things to function optimally, please create a full profile for each "contact". I chose the hard way and created multiple tables for a person and an address. Why did I do this? To make myself miserable, apparently.
+In order for things to function optimally, please create a full profile for each
+"contact". I chose the hard way and created multiple tables for a person and an
+address. Why did I do this? To make myself miserable, apparently.
 
-All fields are optional. I didn't implement any error handling on inputs. But I DO enjoy some input validation, let me tell ya.
+All fields are optional. I didn't implement any error handling on inputs. But I
+DO enjoy some input validation, let me tell ya.
 
-I chose to focus on the fun stuff. Things that I thought might set me apparent from a more novice person.
+I chose to focus on the fun stuff. Things that I thought might set me apparent
+from a more novice person.
 
-I DID struggle with interpreting cryptic errors in the flask console when building out the backend. And of course, I spent too much time on occasion trying to satisfy the TS compiler. I only used "any" once!!! Because I'm spent now.
+I DID struggle with interpreting cryptic errors in the flask console when
+building out the backend. And of course, I spent too much time on occasion
+trying to satisfy the TS compiler. I only used "any" once!!! Because I'm spent
+now.
 
 This app is responsive down to a tablet. Some mobile views look pretty good.

@@ -101,7 +101,7 @@ export const App = () => {
 	const createContact = async (values) => {
 		try {
 			const { data } = await axios.post(
-				'http://localhost:5000/person',
+				'http://localhost:8000/person',
 				{ ...values },
 				{
 					headers: {
@@ -145,7 +145,7 @@ export const App = () => {
 
 	const fetchContacts = async () => {
 		try {
-			const { data } = await axios.get('http://localhost:5000/persons');
+			const { data } = await axios.get('http://localhost:8000/persons');
 			console.log(data);
 			setContacts(data.contacts);
 		} catch (error) {
@@ -155,7 +155,7 @@ export const App = () => {
 
 	const fetchContact = async (id: number) => {
 		try {
-			const { data } = await axios.get(`http://localhost:5000/persons/${id}`);
+			const { data } = await axios.get(`http://localhost:8000/persons/${id}`);
 			console.log(data);
 			setContact(data.contact);
 			localStorage.setItem('current-contact', JSON.stringify(data.contact.id));
@@ -168,7 +168,7 @@ export const App = () => {
 	const updateContact = async () => {
 		try {
 			axios.put(
-				`http://localhost:5000/person/${currentContact.id}`,
+				`http://localhost:8000/person/${currentContact.id}`,
 				{
 					...updatedContact,
 				},
@@ -190,7 +190,7 @@ export const App = () => {
 		localStorage.removeItem('current-contact');
 		localStorage.removeItem('new-contact');
 		try {
-			await axios.delete(`http://localhost:5000/person/${id}`);
+			await axios.delete(`http://localhost:8000/person/${id}`);
 		} catch (err) {
 			console.error(err);
 		}
@@ -210,7 +210,7 @@ export const App = () => {
 		);
 		try {
 			const { data } = await axios.post(
-				`http://localhost:5000/address/${newContactId}`,
+				`http://localhost:8000/address/${newContactId}`,
 				{
 					...values,
 					state: convertedStateInitialsToName,
@@ -238,13 +238,13 @@ export const App = () => {
 
 		try {
 			const { data } = await axios.get(
-				`http://localhost:5000/address/${currentContact.id}`,
+				`http://localhost:8000/address/${currentContact.id}`,
 			);
 			console.log(data);
 			if (!data.address) {
 				try {
 					axios.post(
-						`http://localhost:5000/address/${currentContact.id}`,
+						`http://localhost:8000/address/${currentContact.id}`,
 						{
 							...updatedAddress,
 							state: convertedStateInitialsToName,
@@ -265,7 +265,7 @@ export const App = () => {
 			} else {
 				axios
 					.put(
-						`http://localhost:5000/address/${currentContact.id}`,
+						`http://localhost:8000/address/${currentContact.id}`,
 						{
 							...updatedAddress,
 							state: convertedStateInitialsToName,
@@ -294,7 +294,7 @@ export const App = () => {
 		console.log('***currentContactId***', currentContactId);
 		currentContactId &&
 			axios
-				.get(`http://localhost:5000/persons/${currentContactId}`)
+				.get(`http://localhost:8000/persons/${currentContactId}`)
 				.then((res) => {
 					const { data } = res;
 					setCurrentContact(data.contact);

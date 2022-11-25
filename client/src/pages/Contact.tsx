@@ -31,7 +31,7 @@ export const Contact = ({ deleteContact, setSearchResults }: IProps) => {
 	};
 
 	useEffect(() => {
-		axios.get(`http://localhost:5000/persons/${id}`).then((res) => {
+		axios.get(`http://localhost:8000/persons/${id}`).then((res) => {
 			const { data } = res;
 			console.log(data);
 			localStorage.setItem('current-contact', String(id));
