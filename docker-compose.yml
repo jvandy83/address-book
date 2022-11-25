@@ -2,21 +2,25 @@ version: '3.8'
 services:
   client:
     container_name: client
-    build:
-      context: ./client
-      dockerfile: Dockerfile
+    build: ./client
+    volumes:
+      - ./client/src:/app/src
     ports:
       - 1234:1234
+    tty: true
+    depends_on:
+      - backend
 
   backend:
     restart: always
     container_name: backend
     build: ./backend
+    volumes:
+      - ./backend:/app
     ports:
       - 8000:8000
-    volumes:
-      - ./backend:/usr/src/app
     environment:
       - FLASK_ENV=development
       - FLASK_APP=app.py
       - FLASK_DEBUG=1
+      - FLASK_RUN_PORT=8000

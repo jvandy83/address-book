@@ -1,7 +1,7 @@
 FROM arm64v8/node:14.5.0-alpine
 
 # Set the working directory to /app inside the container
-WORKDIR /app
+WORKDIR /backend
 
 COPY package.json ./
 COPY package-lock.json ./
