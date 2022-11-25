@@ -6,16 +6,20 @@ import { AddressBook } from '../components/AddressBook';
 
 import { initialContactState } from '../App';
 
-import { ContactWithAddress } from '../../types/ContactWithAddress';
+import {
+	ContactWithAddress,
+	ContactsWithAddresses,
+} from '../../types/ContactWithAddress';
 
 import FA from 'react-fontawesome';
 import axios from 'axios';
 
 interface IProps {
 	deleteContact: (id: number) => void;
+	setSearchResults: React.Dispatch<React.SetStateAction<ContactsWithAddresses>>;
 }
 
-export const Contact = ({ deleteContact }: IProps) => {
+export const Contact = ({ deleteContact, setSearchResults }: IProps) => {
 	const { id } = useParams();
 	const [currentContact, setCurrentContact] =
 		useState<ContactWithAddress>(initialContactState);
@@ -35,7 +39,7 @@ export const Contact = ({ deleteContact }: IProps) => {
 		});
 	}, []);
 	return (
-		<AddressBook>
+		<AddressBook setSearchResults={setSearchResults}>
 			<div className='text-white h-4/5 flex flex-col lg:border-2 max-w-xl mx-auto w-full rounded-lg group relative'>
 				<div className='absolute top-2 left-4 hidden group-hover:block'>
 					<a className='text-green-500' href={`mailto:${currentContact.email}`}>

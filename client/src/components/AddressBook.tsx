@@ -4,11 +4,11 @@ import { NavLink, useLocation } from 'react-router-dom';
 
 import FA from 'react-fontawesome';
 import axios from 'axios';
-import { Matches } from '../../types/SearchResultsForContacts';
+import { ContactsWithAddresses } from '../../types/ContactWithAddress';
 
 interface IProps {
 	children: React.ReactNode;
-	setSearchResults?: any;
+	setSearchResults: React.Dispatch<React.SetStateAction<ContactsWithAddresses>>;
 }
 
 export const AddressBook = ({ children, setSearchResults }: IProps) => {
@@ -24,7 +24,7 @@ export const AddressBook = ({ children, setSearchResults }: IProps) => {
 	};
 
 	const searchForContact = async () => {
-		const { data } = await axios.post<Matches>(
+		const { data } = await axios.post(
 			'http://localhost:5000/search',
 			{
 				data: searchString,
@@ -35,12 +35,12 @@ export const AddressBook = ({ children, setSearchResults }: IProps) => {
 				},
 			},
 		);
-		setSearchResults && setSearchResults(data.matches);
+		setSearchResults(data.matches);
 	};
 
 	const clearSearchResults = () => {
 		setSearchString('');
-		setSearchResults && setSearchResults([]);
+		setSearchResults([]);
 	};
 
 	useEffect(() => {

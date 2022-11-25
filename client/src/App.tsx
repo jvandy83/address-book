@@ -356,7 +356,12 @@ export const App = () => {
 				/>
 				<Route
 					path='/contact/:id'
-					element={<Contact deleteContact={deleteContact} />}
+					element={
+						<Contact
+							deleteContact={deleteContact}
+							setSearchResults={setSearchResults}
+						/>
+					}
 				/>
 				<Route
 					path='/'

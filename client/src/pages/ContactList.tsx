@@ -10,8 +10,8 @@ interface IProps {
 	contacts: ContactsWithAddresses;
 	fetchContacts: () => void;
 	fetchContact: (id: number) => void;
-	setSearchResults: any;
-	searchResults: any;
+	setSearchResults: React.Dispatch<React.SetStateAction<ContactsWithAddresses>>;
+	searchResults: ContactsWithAddresses;
 }
 
 export const ContactList = ({
