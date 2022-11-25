@@ -173,11 +173,17 @@ def delete_address(person_id):
 def search():
   # query = request.args.get("query") # here query will be the search inputs name
   # db.session.query(Person, Address).join(Address).all().filter(Person)
-  rows = db.session.query(Person, Address).join(Address).filter(Person.first_name.like('%'+request.json['data']+'%')).order_by(Person.first_name).all()
+  
+  search = request.json['data']
+  rows = db.session.query(Person, Address).filter(Person.first_name.ilike('%'+search+'%')).outerjoin(Address).order_by().all()
+  # rows = db.session.query(Person).join(Address, or_(Person.id == Address.person_id, Person.address == None)).filter(Person.first_name.ilike('%'+search+'%')).all()
+  print(rows)
   results = []
   for row in rows:
-    merged = reduce(lambda x, y: dict(x, **y), (row[0].to_dict(), row[1].to_dict()))
-    results.append(merged)
+    # merged = reduce(lambda x, y: dict(x, **y), ())
+    contact, address = row[0], row[1]
+    address = address.to_dict() if address is not None else {}
+    results.append({**contact.to_dict(), **address})
   # persons = Address.query.join(Person, Address.person_id == Person.id).all()
   print(results)
   return { 'msg': 'ok', 'matches': results }
