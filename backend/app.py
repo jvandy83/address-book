@@ -13,7 +13,6 @@ CORS(app)
 database_uri = 'sqlite:///addressbook.db'
 
 app.config['SQLALCHEMY_DATABASE_URI'] = database_uri
-app.config['FLASK_ENV'] = 'development'
 
 from db import save, commit, enable_foreign_keys, db
 

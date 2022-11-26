@@ -36,16 +36,6 @@ For csh shell users:
 
     > source <rootdir>/backend/bin/activate.csh
 
-### Set your shell variables for Flask:
-
-For Bash users:
-
-    export FLASK_APP=app
-
-For Fish users:
-
-    set FLASK_APP app
-
 ### Create SQLite tables
 
 Open your python/flask repl:
