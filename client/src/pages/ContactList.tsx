@@ -9,7 +9,6 @@ import { ContactsWithAddresses } from '../../types/ContactWithAddress';
 interface IProps {
 	contacts: ContactsWithAddresses;
 	fetchContacts: () => void;
-	fetchContact: (id: number) => void;
 	setSearchResults: React.Dispatch<React.SetStateAction<ContactsWithAddresses>>;
 	searchResults: ContactsWithAddresses;
 }
@@ -17,7 +16,6 @@ interface IProps {
 export const ContactList = ({
 	contacts,
 	fetchContacts,
-	fetchContact,
 	searchResults,
 	setSearchResults,
 }: IProps) => {

@@ -2,6 +2,7 @@
 	"name": "client",
 	"packageManager": "yarn@3.2.4",
 	"devDependencies": {
+		"@types/node": "^18.11.9",
 		"@types/react": "^18.0.25",
 		"@types/react-dom": "^18.0.9",
 		"assert": "^2.0.0",

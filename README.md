@@ -2,7 +2,11 @@
 
 ## For Docker development:
 
-1. Create SQLite tables
+1.  Install dependencies:
+
+        > pip install -r requirements.txt
+
+2.  Create SQLite tables
 
 Open your python/flask repl:
 
@@ -13,7 +17,7 @@ Open your python/flask repl:
     >>> db db.create_all()
     >>> exit()
 
-2.  Build and start docker container:
+3.  Build and start docker container:
 
         > docker-compose build
         > docker-compose up

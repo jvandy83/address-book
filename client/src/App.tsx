@@ -82,7 +82,6 @@ export const App = () => {
 	console.log(address);
 	const [updatedAddress, setUpdatedAddress] = useState(initialAddressState);
 	// contact state
-	const [contact, setContact] = useState(initialContactState);
 	const [contacts, setContacts] = useState<ContactsWithAddresses>([]);
 	const [contactForm, setContactForm] = useState<ContactFormType>(
 		initialContactFormState,
@@ -109,10 +108,7 @@ export const App = () => {
 					},
 				},
 			);
-			console.log(data);
 			localStorage.setItem('new-contact', String(data['contact'].id));
-			setContactForm(initialContactFormState);
-			setEditing(false);
 			return data;
 		} catch (error) {
 			console.error(error);
@@ -148,18 +144,6 @@ export const App = () => {
 			const { data } = await axios.get('http://localhost:8000/persons');
 			console.log(data);
 			setContacts(data.contacts);
-		} catch (error) {
-			console.error(error);
-		}
-	};
-
-	const fetchContact = async (id: number) => {
-		try {
-			const { data } = await axios.get(`http://localhost:8000/persons/${id}`);
-			console.log(data);
-			setContact(data.contact);
-			localStorage.setItem('current-contact', JSON.stringify(data.contact.id));
-			navigate(`/contact/${data.contact.id}`);
 		} catch (error) {
 			console.error(error);
 		}
@@ -371,7 +355,6 @@ export const App = () => {
 							searchResults={searchResults}
 							contacts={contacts}
 							fetchContacts={fetchContacts}
-							fetchContact={fetchContact}
 						/>
 					}
 				/>
