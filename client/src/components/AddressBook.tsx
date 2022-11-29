@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 
 import FA from 'react-fontawesome';
 import axios from 'axios';
@@ -12,12 +12,12 @@ interface IProps {
 }
 
 export const AddressBook = ({ children, setSearchResults }: IProps) => {
+	const navigate = useNavigate();
+
 	const [hideNav, setHideNav] = useState(false);
 	const [searchString, setSearchString] = useState('');
 
 	const { pathname } = useLocation();
-
-	const activeStyle = 'underline';
 
 	const handleChange = ({ target }: React.ChangeEvent<HTMLInputElement>) => {
 		setSearchString(target.value);
@@ -40,7 +40,8 @@ export const AddressBook = ({ children, setSearchResults }: IProps) => {
 
 	const clearSearchResults = () => {
 		setSearchString('');
-		setSearchResults([]);
+		setSearchResults && setSearchResults([]);
+		navigate('/');
 	};
 
 	useEffect(() => {
@@ -59,12 +60,7 @@ export const AddressBook = ({ children, setSearchResults }: IProps) => {
 						onClick={clearSearchResults}
 						className='text-orange-500 cursor-pointer hover:text-orange-400'
 					>
-						<NavLink
-							to='/'
-							className={({ isActive }) => (isActive ? activeStyle : undefined)}
-						>
-							<FA name='users' size='lg' />
-						</NavLink>
+						<FA name='users' size='lg' />
 					</li>
 					<li className='text-green-600 cursor-pointer hover:text-green-500'>
 						<button onClick={searchForContact}>
