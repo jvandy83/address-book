@@ -19,8 +19,8 @@ Open your python/flask repl:
 
 3.  Build and start docker container:
 
-        > docker-compose build
-        > docker-compose up
+        > docker compose --env-file ./config/.env.dev build
+        > docker compose --env-file ./config/.env.dev up
 
 ## Development without Docker
 

@@ -138,8 +138,6 @@ export const EditContactForm = ({
 				});
 	}, []);
 
-	console.log(isDiffed);
-
 	return (
 		<Form>
 			<SubmitButton submitAndSave={updateContact} editing={editing} />

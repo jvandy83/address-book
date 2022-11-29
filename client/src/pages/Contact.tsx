@@ -34,10 +34,10 @@ export const Contact = ({ deleteContact, setSearchResults }: IProps) => {
 		axios.get(`http://localhost:8000/persons/${id}`).then((res) => {
 			const { data } = res;
 			console.log(data);
-			localStorage.setItem('current-contact', String(id));
 			setCurrentContact(data.contact);
 		});
 	}, []);
+
 	return (
 		<AddressBook setSearchResults={setSearchResults}>
 			<div className='text-white h-4/5 flex flex-col lg:border-2 max-w-xl mx-auto w-full rounded-lg group relative'>

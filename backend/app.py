@@ -2,8 +2,6 @@ from flask import Flask, request, make_response
 
 from sqlalchemy import or_, and_, outerjoin
 
-from functools import reduce
-
 from flask_cors import CORS
 
 app = Flask(__name__) 
@@ -60,7 +58,7 @@ def find_persons():
 # GET /persons/<id>
 @app.route("/persons/<id>")
 def find_person(id):
-
+  print('******GET REQUEST BEING CALLED******')
   person = db.session.query(Person, Address).filter(Person.id == id).outerjoin(Address).first()
 
 
@@ -86,7 +84,7 @@ def create_person():
 # PUT /person
 @app.route('/person/<id>', methods = ['PUT', 'PATCH'])
 def update_person(id):
-
+  print('******PUT REQUEST BEING CALLED******')
   create_or_update = convert_person_to_snake_case(request.json)
 
   print('create_or_update: ', create_or_update)

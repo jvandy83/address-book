@@ -2,22 +2,33 @@ version: '3.8'
 services:
   client:
     container_name: client
-    build: ./client
+    build:
+      context: ./client
+      dockerfile: ./${CLIENT_DOCKERFILE}
     volumes:
-      - ./client/src:/app/src
-    ports:
-      - 1234:1234
+      - ./client/src:/usr/src/app
     tty: true
     depends_on:
       - backend
+    ports:
+      - 1234:1234
 
   backend:
     restart: always
     container_name: backend
-    build: ./backend
+    build:
+      context: ./backend
+      dockerfile: ./${BACKEND_DOCKERFILE}
     volumes:
-      - ./backend:/app
+      - ./backend:/usr/src/app
     ports:
       - 8000:8000
-    env_file:
-      - ./backend/.flaskenv
+    depends_on:
+      - sqlite3
+
+  sqlite3:
+    image: keinos/sqlite3
+    stdin_open: true
+    tty: true
+    volumes:
+      - ./backend/instance:/usr/src/app

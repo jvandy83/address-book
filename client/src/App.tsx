@@ -151,7 +151,7 @@ export const App = () => {
 
 	const updateContact = async () => {
 		try {
-			axios.put(
+			await axios.put(
 				`http://localhost:8000/person/${currentContact.id}`,
 				{
 					...updatedContact,
@@ -227,7 +227,7 @@ export const App = () => {
 			console.log(data);
 			if (!data.address) {
 				try {
-					axios.post(
+					await axios.post(
 						`http://localhost:8000/address/${currentContact.id}`,
 						{
 							...updatedAddress,
@@ -247,7 +247,7 @@ export const App = () => {
 					console.error(err);
 				}
 			} else {
-				axios
+				await axios
 					.put(
 						`http://localhost:8000/address/${currentContact.id}`,
 						{
