@@ -103,7 +103,7 @@ export const EditAddressForm = ({
 
 	useEffect(() => {
 		const currentUserId = JSON.parse(localStorage.getItem('current-contact')!);
-		axios.get(`http://localhost:8000/address/${currentUserId}`).then((res) => {
+		axios.get(`${process.env.REACT_APP_BASE_URL}/address/${currentUserId}`).then((res) => {
 			const { data } = res;
 			setAddress(data.address);
 			console.log('***address data*** ', data);

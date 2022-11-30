@@ -131,7 +131,7 @@ export const EditContactForm = ({
 		const currentUserId = JSON.parse(localStorage.getItem('current-contact')!);
 		currentUserId &&
 			axios
-				.get(`http://localhost:8000/persons/${currentUserId}`)
+				.get(`${process.env.REACT_APP_BASE_URL}/persons/${currentUserId}`)
 				.then((res) => {
 					const { data } = res;
 					setRefState(data.contact);

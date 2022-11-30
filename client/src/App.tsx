@@ -100,7 +100,7 @@ export const App = () => {
 	const createContact = async (values) => {
 		try {
 			const { data } = await axios.post(
-				'http://localhost:8000/person',
+				`${process.env.REACT_APP_BASE_URL}/person`,
 				{ ...values },
 				{
 					headers: {
@@ -141,7 +141,7 @@ export const App = () => {
 
 	const fetchContacts = async () => {
 		try {
-			const { data } = await axios.get('http://localhost:8000/persons');
+			const { data } = await axios.get('${process.env.REACT_APP_BASE_URL}/persons');
 			console.log(data);
 			setContacts(data.contacts);
 		} catch (error) {
@@ -152,7 +152,7 @@ export const App = () => {
 	const updateContact = async () => {
 		try {
 			await axios.put(
-				`http://localhost:8000/person/${currentContact.id}`,
+				`${process.env.REACT_APP_BASE_URL}/person/${currentContact.id}`,
 				{
 					...updatedContact,
 				},
@@ -174,7 +174,7 @@ export const App = () => {
 		localStorage.removeItem('current-contact');
 		localStorage.removeItem('new-contact');
 		try {
-			await axios.delete(`http://localhost:8000/person/${id}`);
+			await axios.delete(`${process.env.REACT_APP_BASE_URL}/person/${id}`);
 		} catch (err) {
 			console.error(err);
 		}
@@ -194,7 +194,7 @@ export const App = () => {
 		);
 		try {
 			const { data } = await axios.post(
-				`http://localhost:8000/address/${newContactId}`,
+				`${process.env.REACT_APP_BASE_URL}/address/${newContactId}`,
 				{
 					...values,
 					state: convertedStateInitialsToName,
@@ -222,13 +222,13 @@ export const App = () => {
 
 		try {
 			const { data } = await axios.get(
-				`http://localhost:8000/address/${currentContact.id}`,
+				`${process.env.REACT_APP_BASE_URL}/address/${currentContact.id}`,
 			);
 			console.log(data);
 			if (!data.address) {
 				try {
 					await axios.post(
-						`http://localhost:8000/address/${currentContact.id}`,
+						`${process.env.REACT_APP_BASE_URL}/address/${currentContact.id}`,
 						{
 							...updatedAddress,
 							state: convertedStateInitialsToName,
@@ -249,7 +249,7 @@ export const App = () => {
 			} else {
 				await axios
 					.put(
-						`http://localhost:8000/address/${currentContact.id}`,
+						`${process.env.REACT_APP_BASE_URL}/address/${currentContact.id}`,
 						{
 							...updatedAddress,
 							state: convertedStateInitialsToName,
@@ -278,7 +278,7 @@ export const App = () => {
 		console.log('***currentContactId***', currentContactId);
 		currentContactId &&
 			axios
-				.get(`http://localhost:8000/persons/${currentContactId}`)
+				.get(`${process.env.REACT_APP_BASE_URL}/persons/${currentContactId}`)
 				.then((res) => {
 					const { data } = res;
 					setCurrentContact(data.contact);

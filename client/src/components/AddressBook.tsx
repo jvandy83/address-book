@@ -25,7 +25,7 @@ export const AddressBook = ({ children, setSearchResults }: IProps) => {
 
 	const searchForContact = async () => {
 		const { data } = await axios.post(
-			'http://localhost:8000/search',
+			`${process.env.REACT_APP_BASE_URL}/search`,
 			{
 				data: searchString,
 			},
