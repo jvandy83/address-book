@@ -4,7 +4,7 @@ from sqlalchemy import or_, and_, outerjoin
 
 from flask_cors import CORS
 
-from blue_print.api_blue_print import api_blue_print
+from blue_print.blue_print import api_blue_print
 
 app = Flask(__name__) 
 app.register_blueprint(api_blue_print)
