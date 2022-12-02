@@ -7,6 +7,8 @@ services:
       dockerfile: Dockerfile.prod
 
   backend:
-    build: ./backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.prod
     volumes:
       - ./backend:/usr/src/app
