@@ -4,16 +4,11 @@ from sqlalchemy import or_, and_, outerjoin
 
 from flask_cors import CORS
 
-from blue_print.blue_print import api_blue_print
-
 app = Flask(__name__) 
-app.register_blueprint(api_blue_print)
 
 CORS(app)
 
-database_uri = 'sqlite:///addressbook.db'
-
-app.config['SQLALCHEMY_DATABASE_URI'] = database_uri
+app.config.from_object("config.Config")
 
 from db import save, commit, enable_foreign_keys, db
 
@@ -33,7 +28,7 @@ def index():
   return { 'msg': 'ok' }
 
 # GET /persons
-@app.route("/persons")
+@app.route("/api/persons")
 def find_persons():
 
   persons = db.session.query(Person, Address).outerjoin(Address).order_by().all()
@@ -59,7 +54,7 @@ def find_persons():
     return { 'msg': 'not found', 'contacts': [] }
 
 # GET /persons/<id>
-@app.route("/persons/<id>")
+@app.route("/api/persons/<id>")
 def find_person(id):
   print('******GET REQUEST BEING CALLED******')
   person = db.session.query(Person, Address).filter(Person.id == id).outerjoin(Address).first()
@@ -72,7 +67,7 @@ def find_person(id):
   return {'msg': 'ok', 'contact': { **contact.to_dict(), **address } }
 
 # POST /person
-@app.route("/person", methods = ['POST'])
+@app.route("/api/person", methods = ['POST'])
 def create_person():
   print(request.json)
   create_or_update = convert_person_to_snake_case(request.json)
@@ -85,7 +80,7 @@ def create_person():
   return { 'msg': 'ok', 'contact': person.to_dict() }
 
 # PUT /person
-@app.route('/person/<id>', methods = ['PUT', 'PATCH'])
+@app.route('/api/person/<id>', methods = ['PUT', 'PATCH'])
 def update_person(id):
   print('******PUT REQUEST BEING CALLED******')
   create_or_update = convert_person_to_snake_case(request.json)
@@ -103,7 +98,7 @@ def update_person(id):
 
 # DELETE /person 
 # cascade delete person and address
-@app.route('/person/<id>', methods = ['DELETE'])
+@app.route('/api/person/<id>', methods = ['DELETE'])
 def delete_person(id):
   Person.query.filter(Person.id == id).delete()
 
@@ -112,7 +107,7 @@ def delete_person(id):
   return { 'msg': 'address and person deleted!' }
 
 # GET /address
-@app.route("/address/<id>", methods=['GET'])
+@app.route("/api/address/<id>", methods=['GET'])
 def find_address(id):
   address = Address.query.filter(Address.person_id == id).first()
 
@@ -122,7 +117,7 @@ def find_address(id):
     return { 'msg': 'not found', 'address': None }
 
 # POST /address
-@app.route("/address/<id>", methods = ['POST'])
+@app.route("/api/address/<id>", methods = ['POST'])
 def create_address(id):
 
   create_or_update = convert_address_to_snake_case(request.json, id)
@@ -135,7 +130,7 @@ def create_address(id):
   return { 'msg': 'ok', 'address': 'ok' }
 
 # PUT /address/<person_id>
-@app.route("/address/<id>", methods = ['PUT'])
+@app.route("/api/address/<id>", methods = ['PUT'])
 def update_address(id):
 
   print('***REQUEST_JSON***', request.json)
@@ -152,7 +147,7 @@ def update_address(id):
   
 
 # DELETE /address
-@app.route("/address/<person_id>", methods = ['DELETE'])
+@app.route("/api/address/<person_id>", methods = ['DELETE'])
 def delete_address(person_id):
   Address.query.filter(Address.person_id == person_id).delete()
 
@@ -161,7 +156,7 @@ def delete_address(person_id):
   return { 'msg': 'address and person deleted!' }
 
 # GET /search
-@app.route("/search", methods=['POST'])
+@app.route("/api/search", methods=['POST'])
 def search():
   
   search = request.json['data']

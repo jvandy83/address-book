@@ -141,7 +141,9 @@ export const App = () => {
 
 	const fetchContacts = async () => {
 		try {
-			const { data } = await axios.get('${process.env.REACT_APP_BASE_URL}/persons');
+			const { data } = await axios.get(
+				`${process.env.REACT_APP_BASE_URL}/persons`,
+			);
 			console.log(data);
 			setContacts(data.contacts);
 		} catch (error) {
