@@ -9,7 +9,7 @@ interface IProps {
 export const Form = ({ children }) => {
 	return (
 		<AddressBook>
-			<div className='mx-auto w-full md:w-3/4 lg:w-3/4 xl:w-7/12'>
+			<div className='mx-auto w-full md:w-3/4 h-3/4 overflow-scroll lg:w-3/4 xl:w-7/12'>
 				{children}
 			</div>
 		</AddressBook>

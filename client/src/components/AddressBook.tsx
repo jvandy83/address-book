@@ -8,8 +8,12 @@ import { ContactsWithAddresses } from '../../types/ContactWithAddress';
 
 interface IProps {
 	children: React.ReactNode;
-	setSearchResults: React.Dispatch<React.SetStateAction<ContactsWithAddresses>>;
+	setSearchResults?: React.Dispatch<
+		React.SetStateAction<ContactsWithAddresses>
+	>;
 }
+
+console.log('hello inside addressbook');
 
 export const AddressBook = ({ children, setSearchResults }: IProps) => {
 	const navigate = useNavigate();
@@ -53,7 +57,7 @@ export const AddressBook = ({ children, setSearchResults }: IProps) => {
 	}, [pathname]);
 
 	return (
-		<div className='lg:w-7/8 max-w-5xl relative text-darkBlue bg-darkBlue h-screen w-screen top-0 bottom-0 left-0 right-0  xl:h-4/5 lg:p-8 xl:rounded-lg flex flex-col justify-center px-4'>
+		<div className='lg:w-7/8 max-w-4xl relative text-darkBlue bg-darkBlue h-screen w-screen top-0 bottom-0 left-0 right-0  xl:h-4/5 xl:rounded-lg flex flex-col justify-center px-4'>
 			<nav>
 				<ul className='absolute top-4 flex justify-between w-24'>
 					<li
