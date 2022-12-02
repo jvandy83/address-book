@@ -23,7 +23,7 @@ from models.address import Address
 # enabled for sqlite 
 enable_foreign_keys()
 
-@app.route("/")
+@app.route("/api")
 def index():
   return { 'msg': 'ok' }
 
