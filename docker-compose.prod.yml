@@ -1,14 +1,12 @@
 version: '3.8'
 
 services:
-  nginx:
+  client:
     image: nginx
-    container_name: nginx
-    ports:
-      - 80:80
+    container_name: client
     build:
-      context: ./client/nginx
-      dockerfile: Dockerfile
+      context: ./client
+      dockerfile: Dockerfile.prod
     volumes:
       - .client/dist:/usr/share/nginx/html
     depends_on:
@@ -18,7 +16,6 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile.prod
-    command: gunicorn --bind 0.0.0.0:5000 manage:app
     restart: always
     volumes:
       - ./backend:/usr/src/app
