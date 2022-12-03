@@ -1,4 +1,4 @@
-from app import app as app
+from flask_app import app
 
 from flask_sqlalchemy import SQLAlchemy
 
