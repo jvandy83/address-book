@@ -76,10 +76,12 @@ export const initialAddressResponseState = {
 };
 
 export const App = () => {
+	console.log('hello');
+
 	const navigate = useNavigate();
 	// address state
 	const [address, setAddress] = useState(initialAddressState);
-	console.log(address);
+
 	const [updatedAddress, setUpdatedAddress] = useState(initialAddressState);
 	// contact state
 	const [contacts, setContacts] = useState<ContactsWithAddresses>([]);

@@ -19,7 +19,6 @@ export const ContactList = ({
 	searchResults,
 	setSearchResults,
 }: IProps) => {
-	console.log('hello');
 
 	const navigate = useNavigate();
 	const renderHeaders = () => {

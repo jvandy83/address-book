@@ -13,8 +13,6 @@ interface IProps {
 	>;
 }
 
-console.log('hello inside addressbook');
-
 export const AddressBook = ({ children, setSearchResults }: IProps) => {
 	const navigate = useNavigate();
 
