@@ -7,6 +7,10 @@ services:
     build:
       context: ./client
       dockerfile: Dockerfile.prod
+    volumes:
+      - ./client/dist:/etc/nginx/conf.d
+    ports:
+      - 80:80
     depends_on:
       - backend
 
