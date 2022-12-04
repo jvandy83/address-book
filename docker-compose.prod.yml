@@ -7,8 +7,6 @@ services:
     build:
       context: ./client
       dockerfile: Dockerfile.prod
-    volumes:
-      - .client/dist:/usr/share/nginx/html
     depends_on:
       - backend
 
