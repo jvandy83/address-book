@@ -12,15 +12,11 @@ import { AddressResponseType } from '../../types/AddressResponse';
 import axios from 'axios';
 
 interface IProps {
-	setEditing: React.Dispatch<React.SetStateAction<boolean>>;
-	editing: boolean;
 	setUpdatedAddress: React.Dispatch<React.SetStateAction<AddressFormType>>;
 	updateAddress: () => void;
 }
 
 export const EditAddressForm = ({
-	setEditing,
-	editing,
 	setUpdatedAddress,
 	updateAddress,
 }: IProps) => {
@@ -29,89 +25,100 @@ export const EditAddressForm = ({
 	const zipCodeRef = useRef<HTMLInputElement>(null);
 	const stateRef = useRef<HTMLInputElement>(null);
 
-	const [address, setAddress] = useState<AddressResponseType>(
+	const [existingAddress, setExisitngAddress] = useState(
 		initialAddressResponseState,
 	);
+	const [diffState, setDiffedState] = useState({
+		city: false,
+		state: false,
+		zipCode: false,
+		street: false,
+	});
 
-	const [refState, setRefState] = useState(address);
-	const [isDiffed, setDiffed] = useState(false);
-
-	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		if (!editing) setEditing(true);
+	const checkDiffAndUpdateState = () => {
 		if (streetRef.current) {
-			console.log(streetRef.current.value);
 			setUpdatedAddress((prev) => ({
 				...prev,
 				street: streetRef.current!.value,
 			}));
-			if (!isDiffed && streetRef.current.value !== refState?.street) {
-				setDiffed(true);
-			}
+			setDiffedState((prev) => ({
+				...prev,
+				street: streetRef.current.value !== existingAddress.street,
+			}));
 		}
 		if (cityRef.current) {
-			console.log(cityRef.current.value);
 			setUpdatedAddress((prev) => ({
 				...prev,
 				city: cityRef.current!.value,
 			}));
-			if (!isDiffed && cityRef.current.value !== refState?.city) {
-				setDiffed(true);
-			}
+			setDiffedState((prev) => ({
+				...prev,
+				city: cityRef.current.value !== existingAddress.city,
+			}));
 		}
 		if (zipCodeRef.current) {
-			console.log(zipCodeRef.current.value);
 			setUpdatedAddress((prev) => ({
 				...prev,
 				zipCode: zipCodeRef.current!.value,
 			}));
-			if (!isDiffed && zipCodeRef.current.value !== refState?.zip_code) {
-				setDiffed(true);
-			}
+			setDiffedState((prev) => ({
+				...prev,
+				zipCode: zipCodeRef.current.value !== existingAddress.zip_code,
+			}));
 		}
 		if (stateRef.current) {
-			console.log(stateRef.current.value);
 			setUpdatedAddress((prev) => ({
 				...prev,
 				stateInitials: stateRef.current!.value,
 			}));
-			if (!isDiffed && stateRef.current.value !== refState?.state) {
-				setDiffed(true);
-			}
+			setDiffedState((prev) => ({
+				...prev,
+				state: stateRef.current.value !== existingAddress.state_initials,
+			}));
 		}
-		!isDiffed && editing && setEditing(false);
+	};
+
+	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		checkDiffAndUpdateState();
 	};
 
 	useEffect(() => {
 		if (streetRef.current) {
-			streetRef.current.value = address?.street || '';
+			streetRef.current.value = existingAddress?.street || '';
 		}
 		if (cityRef.current) {
-			cityRef.current.value = address?.city || '';
+			cityRef.current.value = existingAddress?.city || '';
 		}
 		if (zipCodeRef.current) {
-			zipCodeRef.current.value = address?.zip_code || '';
+			zipCodeRef.current.value = existingAddress?.zip_code || '';
 		}
 		if (stateRef.current) {
-			stateRef.current.value = address?.state_initials || '';
+			stateRef.current.value = existingAddress?.state_initials || '';
 		}
 	}, [
-		address?.street,
-		address?.city,
-		address?.zip_code,
-		address?.state_initials,
+		existingAddress?.street,
+		existingAddress?.city,
+		existingAddress?.zip_code,
+		existingAddress?.state_initials,
 	]);
 
 	useEffect(() => {
 		const currentUserId = JSON.parse(localStorage.getItem('current-contact')!);
-		axios.get(`${process.env.REACT_APP_BASE_URL}/address/${currentUserId}`).then((res) => {
-			const { data } = res;
-			setAddress(data.address);
-			console.log('***address data*** ', data);
-		});
+		axios
+			.get(`${process.env.REACT_APP_BASE_URL}/address/${currentUserId}`)
+			.then((res) => {
+				const { data } = res;
+				setExisitngAddress(data.address);
+			});
 	}, []);
 	return (
 		<Form>
-			<SubmitButton editing={editing} submitAndSave={updateAddress} />
+			<SubmitButton
+				isDiffed={
+					Object.values(diffState).filter((val) => val !== false).length > 0
+				}
+				submitAndSave={updateAddress}
+			/>
 			<InputField
 				ref={zipCodeRef}
 				label='Zipcode'

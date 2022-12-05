@@ -76,8 +76,6 @@ export const initialAddressResponseState = {
 };
 
 export const App = () => {
-	console.log('hello');
-
 	const navigate = useNavigate();
 	// address state
 	const [address, setAddress] = useState(initialAddressState);
@@ -93,8 +91,6 @@ export const App = () => {
 		useState<ContactWithAddress>(initialContactState);
 	//
 	const [status, setStatus] = useState<FormStatus>(initialStatus);
-
-	const [editing, setEditing] = useState(false);
 
 	const [searchResults, setSearchResults] = useState<ContactsWithAddresses>([]);
 
@@ -136,7 +132,6 @@ export const App = () => {
 			...prev,
 			enteringAddress: true,
 		}));
-		setEditing(false);
 		const newContactId = JSON.parse(localStorage.getItem('new-contact')!);
 		navigate(`/address-form/${newContactId}`);
 	};
@@ -167,7 +162,6 @@ export const App = () => {
 				},
 			);
 			setUpdatedContact(initialContactFormState);
-			setEditing(false);
 			navigate(`/contact/${currentContact.id}`);
 		} catch (error) {
 			console.error(error);
@@ -211,7 +205,6 @@ export const App = () => {
 				},
 			);
 			setAddress(initialAddressState);
-			setEditing(false);
 			navigate(`/contact/${newContactId}`);
 		} catch (error) {
 			console.error(error);
@@ -245,7 +238,6 @@ export const App = () => {
 						},
 					);
 					setAddress(initialAddressState);
-					setEditing(false);
 					navigate(`/contact/${currentContact.id}`);
 				} catch (err) {
 					console.error(err);
@@ -266,7 +258,6 @@ export const App = () => {
 						},
 					)
 					.then((res) => {
-						setEditing(false);
 						navigate(`/contact/${currentContact.id}`);
 					});
 			}
@@ -300,8 +291,6 @@ export const App = () => {
 							handleSubmitAndRedirect={handleSubmitAndRedirectToAddress}
 							handleSubmitAndSave={handleSubmitAndSaveContact}
 							setContactForm={setContactForm}
-							editing={editing}
-							setEditing={setEditing}
 						/>
 					}
 				/>
@@ -309,8 +298,6 @@ export const App = () => {
 					path='/edit-contact-form/:id'
 					element={
 						<EditContactForm
-							editing={editing}
-							setEditing={setEditing}
 							handleSubmitAndRedirect={handleSubmitAndRedirectToAddress}
 							updateContact={updateContact}
 							setUpdatedContact={setUpdatedContact}
@@ -322,8 +309,6 @@ export const App = () => {
 					element={
 						<EditAddressForm
 							setUpdatedAddress={setUpdatedAddress}
-							editing={editing}
-							setEditing={setEditing}
 							updateAddress={updateAddress}
 						/>
 					}
@@ -337,8 +322,6 @@ export const App = () => {
 							setStatus={setStatus}
 							address={address}
 							setAddress={setAddress}
-							editing={editing}
-							setEditing={setEditing}
 						/>
 					}
 				/>

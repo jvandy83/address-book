@@ -14,8 +14,6 @@ interface IProps {
 	handleClick: (values: AddressFormType) => void;
 	address: AddressFormType;
 	setAddress: React.Dispatch<React.SetStateAction<AddressFormType>>;
-	editing: boolean;
-	setEditing: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 type ZipLookup = {
@@ -30,18 +28,13 @@ export const AddressForm = ({
 	handleClick,
 	status,
 	setStatus,
-	editing,
-	setEditing,
 }: IProps) => {
-	const cityRef = useRef(null);
-	const stateRef = useRef(null);
+	const [editing, setEditing] = useState(false);
 	const [zipLookup, setZipLookup] = useState<ZipLookup>({
 		city: '',
 		state: '',
 		zip: '',
 	});
-	console.log(zipLookup);
-	console.log(address);
 	const [zipFound, setZipFound] = useState(false);
 
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

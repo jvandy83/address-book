@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { InputField } from '../components/InputField';
 import { SubmitButton } from '../components/button/SubmitButton';
 import { ContactFormType } from '../../types/Contact';
@@ -10,28 +10,17 @@ interface IProps {
 	handleSubmitAndSave: () => void;
 	handleSubmitAndRedirect: () => void;
 	setContactForm: React.Dispatch<React.SetStateAction<ContactFormType>>;
-	setEditing: React.Dispatch<React.SetStateAction<boolean>>;
 	contactForm: ContactFormType;
-	editing: boolean;
 }
 
 export const ContactForm = ({
 	handleSubmitAndSave,
 	handleSubmitAndRedirect,
 	setContactForm,
-	setEditing,
 	contactForm,
-	editing,
 }: IProps) => {
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const { name, value } = e.target;
-		console.log(value);
-		let isDiffed = false;
-		if (!editing) setEditing(true);
-		for (let field in contactForm) {
-			isDiffed = contactForm[field] ? true : false;
-		}
-		!isDiffed && !value && editing && setEditing(false);
 		setContactForm((prev) => ({
 			...prev,
 			[name]: value,
@@ -40,7 +29,14 @@ export const ContactForm = ({
 
 	return (
 		<Form>
-			<SubmitButton submitAndSave={handleSubmitAndSave} editing={editing} />
+			<SubmitButton
+				submitAndSave={handleSubmitAndSave}
+				isDiffed={
+					Object.values(contactForm).filter(
+						(inputField) => inputField.length > 0,
+					).length > 0
+				}
+			/>
 			<div className='text-center py-4'>
 				<h1 className='text-4xl font-indiaFlower text-white'>
 					Create a Contact
@@ -88,7 +84,11 @@ export const ContactForm = ({
 			/>
 			<SubmitAndRedirect
 				handleSubmitAndRedirect={handleSubmitAndRedirect}
-				editing={editing}
+				isDiffed={
+					Object.values(contactForm).filter(
+						(inputField) => inputField.length > 0,
+					).length > 0
+				}
 			/>
 		</Form>
 	);

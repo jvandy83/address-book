@@ -2,15 +2,18 @@ import React from 'react';
 import { ContactFormType } from '../../../types/Contact';
 
 interface IProps {
-	editing: boolean;
-	handleSubmitAndRedirect: (values: ContactFormType) => void;
+	isDiffed: boolean;
+	handleSubmitAndRedirect: () => void;
 }
 
-export const SubmitAndRedirect = ({ editing, handleSubmitAndRedirect }) => {
+export const SubmitAndRedirect = ({
+	isDiffed,
+	handleSubmitAndRedirect,
+}: IProps) => {
 	return (
-		<div className={`flex py-2 ${!editing && 'invisible'}`}>
+		<div className={`flex py-2 ${!isDiffed && 'invisible'}`}>
 			<button
-				disabled={!editing}
+				disabled={!isDiffed}
 				// handle submit contact
 				// and redirect to address form
 				onClick={handleSubmitAndRedirect}

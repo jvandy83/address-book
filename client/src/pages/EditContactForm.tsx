@@ -5,27 +5,21 @@ import { useNavigate } from 'react-router-dom';
 import { Form } from '../components/Form';
 
 import { InputField } from '../components/InputField';
-import { SubmitAndRedirect } from '../components/button/SubmitAndRedirect';
 import { SubmitButton } from '../components/button/SubmitButton';
 
 import { initialContactResponse } from '../App';
 
-import { ContactWithAddress } from '../../types/ContactWithAddress';
 import { ContactFormType } from '../../types/Contact';
 import { ContactResponseType } from '../../types/Contact';
 import axios from 'axios';
 
 interface IProps {
-	editing: boolean;
 	handleSubmitAndRedirect: () => void;
 	updateContact: () => void;
-	setEditing: React.Dispatch<React.SetStateAction<boolean>>;
 	setUpdatedContact: React.Dispatch<React.SetStateAction<ContactFormType>>;
 }
 
 export const EditContactForm = ({
-	editing,
-	setEditing,
 	handleSubmitAndRedirect,
 	updateContact,
 	setUpdatedContact,
@@ -36,10 +30,15 @@ export const EditContactForm = ({
 	const emailRef = useRef<HTMLInputElement>(null);
 	const phoneNumberRef = useRef<HTMLInputElement>(null);
 
-	const [refState, setRefState] = useState<ContactResponseType>(
+	const [exisitingContact, setExistingContact] = useState<ContactResponseType>(
 		initialContactResponse,
 	);
-	const [isDiffed, setDiffed] = useState(false);
+	const [diffState, setDiffState] = useState({
+		firstName: false,
+		lastName: false,
+		company: false,
+		phoneNumber: false,
+	});
 
 	const navigate = useNavigate();
 
@@ -47,84 +46,89 @@ export const EditContactForm = ({
 		const currentContactId = JSON.parse(
 			localStorage.getItem('current-contact')!,
 		);
-		console.log(currentContactId);
 
 		navigate(`/edit-address-form/${currentContactId}`);
 	};
 
-	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		if (!editing) setEditing(true);
+	const checkDiffAndUpdateState = () => {
 		if (firstNameRef.current) {
+			setDiffState((prev) => ({
+				...prev,
+				firstName: firstNameRef.current.value !== exisitingContact.first_name,
+			}));
 			setUpdatedContact((prev) => ({
 				...prev,
-				firstName: firstNameRef.current!.value,
+				firstName: firstNameRef.current.value,
 			}));
-			if (!isDiffed && firstNameRef.current.value !== refState.first_name) {
-				setDiffed(true);
-			}
 		}
-		console.log(isDiffed);
 		if (lastNameRef.current) {
+			setDiffState((prev) => ({
+				...prev,
+				lastName: lastNameRef.current.value !== exisitingContact.last_name,
+			}));
 			setUpdatedContact((prev) => ({
 				...prev,
-				lastName: lastNameRef.current!.value,
+				lastName: lastNameRef.current.value,
 			}));
-			if (!isDiffed && lastNameRef.current.value !== refState.last_name) {
-				setDiffed(true);
-			}
 		}
 		if (companyRef.current) {
+			setDiffState((prev) => ({
+				...prev,
+				company: companyRef.current.value !== exisitingContact.company,
+			}));
 			setUpdatedContact((prev) => ({
 				...prev,
-				company: companyRef.current!.value,
+				company: companyRef.current.value,
 			}));
-			if (!isDiffed && companyRef.current.value !== refState.company) {
-				setDiffed(true);
-			}
 		}
 		if (emailRef.current) {
+			setDiffState((prev) => ({
+				...prev,
+				email: emailRef.current.value !== exisitingContact.email,
+			}));
 			setUpdatedContact((prev) => ({
 				...prev,
-				email: emailRef.current!.value,
+				email: emailRef.current.value,
 			}));
-			if (!isDiffed && emailRef.current.value !== refState.email) {
-				setDiffed(true);
-			}
 		}
 		if (phoneNumberRef.current) {
+			setDiffState((prev) => ({
+				...prev,
+				phoneNumber: phoneNumberRef.current.value !== exisitingContact.phone_number,
+			}));
 			setUpdatedContact((prev) => ({
 				...prev,
-				phoneNumber: phoneNumberRef.current!.value,
+				phoneNumber: phoneNumberRef.current.value,
 			}));
-			if (!isDiffed && phoneNumberRef.current.value !== refState.phone_number) {
-				setDiffed(true);
-			}
 		}
-		!isDiffed && editing && setEditing(false);
+	};
+
+	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		checkDiffAndUpdateState();
 	};
 
 	useEffect(() => {
 		if (firstNameRef.current) {
-			firstNameRef.current.value = refState?.first_name || '';
+			firstNameRef.current.value = exisitingContact?.first_name || '';
 		}
 		if (lastNameRef.current) {
-			lastNameRef.current.value = refState?.last_name || '';
+			lastNameRef.current.value = exisitingContact?.last_name || '';
 		}
 		if (emailRef.current) {
-			emailRef.current.value = refState?.email || '';
+			emailRef.current.value = exisitingContact?.email || '';
 		}
 		if (companyRef.current) {
-			companyRef.current.value = refState?.company || '';
+			companyRef.current.value = exisitingContact?.company || '';
 		}
 		if (phoneNumberRef.current) {
-			phoneNumberRef.current.value = refState?.phone_number || '';
+			phoneNumberRef.current.value = exisitingContact?.phone_number || '';
 		}
 	}, [
-		refState?.first_name,
-		refState?.last_name,
-		refState?.company,
-		refState?.email,
-		refState?.phone_number,
+		exisitingContact?.first_name,
+		exisitingContact?.last_name,
+		exisitingContact?.company,
+		exisitingContact?.email,
+		exisitingContact?.phone_number,
 	]);
 
 	useEffect(() => {
@@ -134,13 +138,18 @@ export const EditContactForm = ({
 				.get(`${process.env.REACT_APP_BASE_URL}/persons/${currentUserId}`)
 				.then((res) => {
 					const { data } = res;
-					setRefState(data.contact);
+					setExistingContact(data.contact);
 				});
 	}, []);
 
 	return (
 		<Form>
-			<SubmitButton submitAndSave={updateContact} editing={editing} />
+			<SubmitButton
+				submitAndSave={updateContact}
+				isDiffed={
+					Object.values(diffState).filter((val) => val !== false).length > 0
+				}
+			/>
 			<InputField
 				handleChange={handleChange}
 				label='First Name'
@@ -191,7 +200,9 @@ export const EditContactForm = ({
 					// handle submit contact
 					// and redirect to address form
 					onClick={
-						isDiffed ? handleSubmitAndRedirect : handleRedirectWithoutSubmit
+						Object.values(diffState).filter((val) => val !== false).length > 0
+							? handleSubmitAndRedirect
+							: handleRedirectWithoutSubmit
 					}
 					className=' bg-blue-600 hover:bg-blue-500 rounded-full w-12 h-10 flex justify-center items-center text-3xl cursor-pointer'
 				>
