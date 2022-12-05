@@ -2,7 +2,9 @@
 	"name": "client",
 	"packageManager": "yarn@3.2.4",
 	"devDependencies": {
-		
+		"@types/node": "^18.11.9",
+		"@types/react": "^18.0.25",
+		"@types/react-dom": "^18.0.9"
 	},
 	"scripts": {
 		"start": "parcel ./src/index.html",
@@ -10,9 +12,6 @@
 		"clean": "rm -rf dist .cache"
 	},
 	"dependencies": {
-    "@types/node": "^18.11.9",
-		"@types/react": "^18.0.25",
-		"@types/react-dom": "^18.0.9",
 		"assert": "^2.0.0",
 		"autoprefixer": "^10.4.13",
 		"browserify-zlib": "^0.2.0",
