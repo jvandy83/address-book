@@ -15,9 +15,9 @@ RUN npm run build
 
 FROM nginx
 
-RUN mkdir -p /etc/nginx/conf.d
+RUN rm /etc/nginx/nginx.conf
 
-COPY ./default.conf /etc/nginx/conf.d/default.conf
+COPY ./nginx.conf /etc/nginx/nginx.conf
 
 COPY --from=build /home/usr/app/dist /usr/share/nginx/html/
 
