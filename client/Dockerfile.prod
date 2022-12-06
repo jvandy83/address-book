@@ -17,7 +17,7 @@ FROM nginx
 
 RUN rm /etc/nginx/nginx.conf
 
-COPY nginx.conf /etc/nginx
+COPY ./nginx.conf /etc/nginx
 
 COPY --from=build /home/usr/app/dist /usr/share/nginx/html/
 
