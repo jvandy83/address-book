@@ -43,7 +43,7 @@ export const EditAddressForm = ({
 			}));
 			setDiffedState((prev) => ({
 				...prev,
-				street: streetRef.current.value !== existingAddress.street,
+				street: streetRef.current.value !== existingAddress?.street,
 			}));
 		}
 		if (cityRef.current) {
@@ -53,7 +53,7 @@ export const EditAddressForm = ({
 			}));
 			setDiffedState((prev) => ({
 				...prev,
-				city: cityRef.current.value !== existingAddress.city,
+				city: cityRef.current.value !== existingAddress?.city,
 			}));
 		}
 		if (zipCodeRef.current) {
@@ -63,7 +63,7 @@ export const EditAddressForm = ({
 			}));
 			setDiffedState((prev) => ({
 				...prev,
-				zipCode: zipCodeRef.current.value !== existingAddress.zip_code,
+				zipCode: zipCodeRef.current.value !== existingAddress?.zip_code,
 			}));
 		}
 		if (stateRef.current) {
@@ -73,7 +73,7 @@ export const EditAddressForm = ({
 			}));
 			setDiffedState((prev) => ({
 				...prev,
-				state: stateRef.current.value !== existingAddress.state_initials,
+				state: stateRef.current.value !== existingAddress?.state_initials,
 			}));
 		}
 	};
@@ -103,9 +103,11 @@ export const EditAddressForm = ({
 	]);
 
 	useEffect(() => {
-		const currentUserId = JSON.parse(localStorage.getItem('current-contact')!);
+		const currentContactId = JSON.parse(
+			localStorage.getItem('current-contact')!,
+		);
 		axios
-			.get(`${process.env.REACT_APP_BASE_URL}/address/${currentUserId}`)
+			.get(`${process.env.REACT_APP_BASE_URL}/address/${currentContactId}`)
 			.then((res) => {
 				const { data } = res;
 				setExisitngAddress(data.address);
