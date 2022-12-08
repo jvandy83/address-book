@@ -17,4 +17,4 @@ services:
       dockerfile: Dockerfile.prod
     restart: always
     environment:
-      - FLASK_APP=flask_app.py
+      - FLASK_APP=manage.py
