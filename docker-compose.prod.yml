@@ -16,6 +16,7 @@ services:
       context: ./backend
       dockerfile: Dockerfile.prod
     restart: always
-    volumes: ./backend/instance:/usr/src/app
+    volumes:
+      - ./backend/instance:/usr/src/app
     environment:
       - FLASK_APP=flask_app.py
