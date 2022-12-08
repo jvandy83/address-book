@@ -33,7 +33,6 @@ export const Contact = ({ deleteContact, setSearchResults }: IProps) => {
 	useEffect(() => {
 		axios.get(`${process.env.REACT_APP_BASE_URL}/persons/${id}`).then((res) => {
 			const { data } = res;
-			console.log(data);
 			setCurrentContact(data.contact);
 		});
 	}, []);

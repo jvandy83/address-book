@@ -7,7 +7,6 @@ import { SubmitButton } from '../components/button/SubmitButton';
 import { initialAddressResponseState } from '../App';
 
 import { AddressFormType } from '../../types/AddressForm';
-import { AddressResponseType } from '../../types/AddressResponse';
 
 import axios from 'axios';
 

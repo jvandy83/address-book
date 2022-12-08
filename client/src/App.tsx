@@ -106,6 +106,7 @@ export const App = () => {
 					},
 				},
 			);
+			setContactForm(initialContactFormState);
 			localStorage.setItem('new-contact', String(data['contact'].id));
 			return data;
 		} catch (error) {
@@ -115,12 +116,13 @@ export const App = () => {
 
 	const handleSubmitAndSaveContact = async () => {
 		try {
-			const data = await createContact(contactForm);
+			await createContact(contactForm);
 			setStatus((prev) => ({
 				...prev,
 				submittingContact: true,
 			}));
-			navigate(`/contact/${data.contact.id}`);
+			const newContactId = JSON.parse(localStorage.getItem('new-contact')!);
+			navigate(`/contact/${newContactId}`);
 		} catch (error) {
 			console.error(error);
 		}
@@ -141,7 +143,6 @@ export const App = () => {
 			const { data } = await axios.get(
 				`${process.env.REACT_APP_BASE_URL}/persons`,
 			);
-			console.log(data);
 			setContacts(data.contacts);
 		} catch (error) {
 			console.error(error);
@@ -191,7 +192,7 @@ export const App = () => {
 			'name',
 		);
 		try {
-			const { data } = await axios.post(
+			await axios.post(
 				`${process.env.REACT_APP_BASE_URL}/address/${newContactId}`,
 				{
 					...values,
@@ -204,7 +205,6 @@ export const App = () => {
 					},
 				},
 			);
-			setAddress(initialAddressState);
 			navigate(`/contact/${newContactId}`);
 		} catch (error) {
 			console.error(error);
@@ -279,7 +279,6 @@ export const App = () => {
 					setCurrentContact(data.contact);
 				});
 	}, [JSON.parse(localStorage.getItem('current-contact')!)]);
-
 	return (
 		<Routes>
 			<Route path='/' element={<Layout />}>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { InputField } from '../components/InputField';
 import { SubmitButton } from '../components/button/SubmitButton';
 import { ContactFormType } from '../../types/Contact';
@@ -26,7 +26,6 @@ export const ContactForm = ({
 			[name]: value,
 		}));
 	};
-
 	return (
 		<Form>
 			<SubmitButton

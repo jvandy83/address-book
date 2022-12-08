@@ -39,6 +39,8 @@ export const AddressForm = ({
 
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const { name, value } = e.target;
+		let isDiffed = false;
+		if (!editing) setEditing(true);
 		if (name === 'zipCode') {
 			usps.cityStateLookup(value, function (err, result) {
 				if (err) {
@@ -55,12 +57,10 @@ export const AddressForm = ({
 				}
 			});
 		}
-		let isDiffed = false;
-		if (!editing) setEditing(true);
 		for (let field in address) {
 			isDiffed = address[field] ? true : false;
 		}
-		!isDiffed && !value && editing && setEditing(false);
+		!isDiffed && !value && setEditing(false);
 		setAddress((prev) => ({
 			...prev,
 			[name]: value,

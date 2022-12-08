@@ -94,7 +94,8 @@ export const EditContactForm = ({
 		if (phoneNumberRef.current) {
 			setDiffState((prev) => ({
 				...prev,
-				phoneNumber: phoneNumberRef.current.value !== exisitingContact.phone_number,
+				phoneNumber:
+					phoneNumberRef.current.value !== exisitingContact.phone_number,
 			}));
 			setUpdatedContact((prev) => ({
 				...prev,
