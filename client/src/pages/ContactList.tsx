@@ -1,25 +1,20 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { useNavigate } from 'react-router-dom';
 
+import { fetchContacts } from '../redux/features/contact/contactSlice';
+
+import { useAppDispatch, useAppSelector } from '../redux/hooks';
+
 import { AddressBook } from '../components/AddressBook';
 
-import { ContactsWithAddresses } from '../../types/ContactWithAddress';
-
-interface IProps {
-	contacts: ContactsWithAddresses;
-	fetchContacts: () => void;
-	setSearchResults: React.Dispatch<React.SetStateAction<ContactsWithAddresses>>;
-	searchResults: ContactsWithAddresses;
-}
-
-export const ContactList = ({
-	contacts,
-	fetchContacts,
-	searchResults,
-	setSearchResults,
-}: IProps) => {
+export const ContactList = () => {
+	const dispatch = useAppDispatch();
 	const navigate = useNavigate();
+
+	const { contacts } = useAppSelector((state) => state.contact);
+	const { searchResults } = useAppSelector((state) => state.contact);
+
 	const renderHeaders = () => {
 		return (
 			<ul className='grid grid-cols-5 w-full text-white p-2'>
@@ -33,7 +28,6 @@ export const ContactList = ({
 	};
 
 	const selectCurrentContactAndRedirect = (c) => {
-		localStorage.setItem('current-contact', c.id);
 		navigate(`/contact/${c.id}`);
 	};
 
@@ -92,11 +86,13 @@ export const ContactList = ({
 	};
 
 	useEffect(() => {
-		fetchContacts();
+		localStorage.removeItem('new-contact');
+		localStorage.removeItem('current-contact');
+		dispatch(fetchContacts());
 	}, []);
 
 	return (
-		<AddressBook setSearchResults={setSearchResults}>
+		<AddressBook>
 			{renderHeaders()}
 			<ul className='text-white h-4/5 flex flex-col'>
 				{searchResults.length ? renderSearchResults() : renderContacts()}

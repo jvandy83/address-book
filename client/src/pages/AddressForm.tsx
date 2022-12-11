@@ -1,4 +1,10 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useState } from 'react';
+
+import { useNavigate, useParams } from 'react-router-dom';
+
+import { useAppDispatch } from '../redux/hooks';
+
+import { createAddress } from '../redux/features/address/addressSlice';
 
 import { InputField } from '../components/InputField';
 
@@ -6,15 +12,8 @@ import { Form } from '../components/Form';
 
 import { usps } from '../usps';
 
-import { FormStatus } from '../../types/FormStatus';
-import { AddressFormType } from '../../types/AddressForm';
-interface IProps {
-	setStatus: React.Dispatch<React.SetStateAction<FormStatus>>;
-	status: FormStatus;
-	handleClick: (values: AddressFormType) => void;
-	address: AddressFormType;
-	setAddress: React.Dispatch<React.SetStateAction<AddressFormType>>;
-}
+import { SubmitButton } from '../components/button/SubmitButton';
+import { AddressFormState } from '~../types/address';
 
 type ZipLookup = {
 	city: string;
@@ -22,25 +21,32 @@ type ZipLookup = {
 	zip: string;
 };
 
-export const AddressForm = ({
-	address,
-	setAddress,
-	handleClick,
-	status,
-	setStatus,
-}: IProps) => {
-	const [editing, setEditing] = useState(false);
+export const AddressForm = () => {
+	const dispatch = useAppDispatch();
+	const navigate = useNavigate();
+
+	const { id } = useParams();
+
+	const [address, setAddress] = useState<AddressFormState>({
+		city: '',
+		stateInitials: '',
+		zipCode: '',
+		street: '',
+	});
 	const [zipLookup, setZipLookup] = useState<ZipLookup>({
 		city: '',
 		state: '',
 		zip: '',
 	});
-	const [zipFound, setZipFound] = useState(false);
+
+	const handleSubmit = () => {
+		
+		dispatch(createAddress({ ...address, id }));
+		navigate(`/contact/${id}`);
+	};
 
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const { name, value } = e.target;
-		let isDiffed = false;
-		if (!editing) setEditing(true);
 		if (name === 'zipCode') {
 			usps.cityStateLookup(value, function (err, result) {
 				if (err) {
@@ -53,46 +59,24 @@ export const AddressForm = ({
 						stateInitials: state,
 						zipCode: zip,
 					}));
-					setZipFound(true);
 				}
 			});
 		}
-		for (let field in address) {
-			isDiffed = address[field] ? true : false;
-		}
-		!isDiffed && !value && setEditing(false);
 		setAddress((prev) => ({
 			...prev,
 			[name]: value,
 		}));
 	};
-	useEffect(() => {
-		status.submittingAddress &&
-			setAddress((prev) => ({
-				...prev,
-				personId: JSON.parse(localStorage.getItem('new_user')!),
-			}));
-		return () => {
-			setStatus({
-				enteringContact: false,
-				enteringAddress: false,
-				submittingContact: false,
-				submittingAddress: false,
-			});
-		};
-	}, [status.submittingAddress]);
 
 	return (
 		<Form>
-			<button
-				onClick={() => handleClick(address)}
-				className={`absolute top-4 right-6 ${
-					editing ? 'text-blue-300' : 'text-grayBlue'
-				}`}
-				disabled={!editing}
-			>
-				Done
-			</button>
+			<SubmitButton
+				submitAndSave={handleSubmit}
+				isDiffed={
+					Object.values(address).filter((inputField) => inputField.length > 0)
+						.length > 0
+				}
+			/>
 			<div className='flex justify-center py-4'>
 				<h1 className='text-4xl font-indiaFlower text-white'>Add an Address</h1>
 			</div>

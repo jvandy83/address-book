@@ -46,8 +46,7 @@ def convert_address_to_snake_case(content, id):
   if 'city' in content:
     converted_values['city'] = content['city']
 
-  if 'personId' in content:
-    converted_values['person_id'] = id
+  converted_values['person_id'] = id
 
   def create(Address):
     address = Address(**converted_values)

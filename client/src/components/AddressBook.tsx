@@ -1,20 +1,20 @@
 import React, { useEffect, useState } from 'react';
 
-import { NavLink, useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
-import axios from 'axios';
-import { ContactsWithAddresses } from '../../types/ContactWithAddress';
+import { useAppDispatch } from '../redux/hooks';
+
+import { clearSearchResults } from '../redux/features/contact/contactSlice';
+
 import { Navbar } from './Navbar';
 
 interface IProps {
 	children: React.ReactNode;
-	setSearchResults?: React.Dispatch<
-		React.SetStateAction<ContactsWithAddresses>
-	>;
 }
 
-export const AddressBook = ({ children, setSearchResults }: IProps) => {
+export const AddressBook = ({ children }: IProps) => {
 	const navigate = useNavigate();
+	const dispatch = useAppDispatch();
 
 	const [hideNav, setHideNav] = useState(false);
 	const [searchString, setSearchString] = useState('');
@@ -25,24 +25,9 @@ export const AddressBook = ({ children, setSearchResults }: IProps) => {
 		setSearchString(target.value);
 	};
 
-	const searchForContact = async () => {
-		const { data } = await axios.post(
-			`${process.env.REACT_APP_BASE_URL}/search`,
-			{
-				data: searchString,
-			},
-			{
-				headers: {
-					'Content-Type': 'application/json',
-				},
-			},
-		);
-		setSearchResults(data.matches);
-	};
-
-	const clearSearchResults = () => {
+	const reset = () => {
 		setSearchString('');
-		setSearchResults && setSearchResults([]);
+		dispatch(clearSearchResults());
 		navigate('/');
 	};
 
@@ -55,11 +40,10 @@ export const AddressBook = ({ children, setSearchResults }: IProps) => {
 	}, [pathname]);
 
 	return (
-		<div className='lg:w-7/8 max-w-4xl text-darkBlue bg-darkBlue h-screen w-screen xl:h-4/5 xl:rounded-lg flex flex-col  px-4'>
+		<div className='lg:w-7/8 max-w-4xl text-darkBlue bg-darkBlue h-screen w-screen xl:h-4/5 xl:rounded-lg flex flex-col relative px-4'>
 			<Navbar
 				handleChange={handleChange}
-				clearSearchResults={clearSearchResults}
-				searchForContact={searchForContact}
+				clearSearchResults={reset}
 				searchString={searchString}
 				hideNav={hideNav}
 			/>
