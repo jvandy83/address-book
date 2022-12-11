@@ -55,14 +55,14 @@ def find_persons():
 
 # GET /persons/<id>
 @app.route("/api/persons/<id>")
-def find_person(id):
-  print('******GET REQUEST BEING CALLED******')
+def get_all_info(id):
   person = db.session.query(Person, Address).filter(Person.id == id).outerjoin(Address).first()
-
 
   contact, address = person[0], person[1]
 
   address = address.to_dict() if address is not None else {}
+
+  print({ **contact.to_dict(), **address })
 
   return {'msg': 'ok', 'contact': { **contact.to_dict(), **address } }
 
@@ -82,7 +82,6 @@ def create_person():
 # PUT /person
 @app.route('/api/person/<id>', methods = ['PUT', 'PATCH'])
 def update_person(id):
-  print('******PUT REQUEST BEING CALLED******')
   create_or_update = convert_person_to_snake_case(request.json)
 
   print('create_or_update: ', create_or_update)
@@ -133,13 +132,16 @@ def create_address(id):
 @app.route("/api/address/<id>", methods = ['PUT'])
 def update_address(id):
 
-  print('***REQUEST_JSON***', request.json)
 
   create_or_update = convert_address_to_snake_case(request.json, id)
 
   updates = create_or_update['updates']
 
-  db.session.query(Address).filter(Address.person_id == id).update(updates)
+  try:
+    result = db.session.query(Address).filter(Address.person_id == id).update(updates)
+    print('*****RESULT******: ', result)
+  except:
+    print('An error occurred in the db query')
 
   commit()
 

@@ -1,35 +1,74 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
+
+import { useNavigate } from 'react-router-dom';
+
+import { createContact } from '../redux/features/contact/contactSlice';
+
 import { InputField } from '../components/InputField';
 import { SubmitButton } from '../components/button/SubmitButton';
-import { ContactFormType } from '../../types/Contact';
 
 import { Form } from '../components/Form';
 import { SubmitAndRedirect } from '../components/button/SubmitAndRedirect';
 
-interface IProps {
-	handleSubmitAndSave: () => void;
-	handleSubmitAndRedirect: () => void;
-	setContactForm: React.Dispatch<React.SetStateAction<ContactFormType>>;
-	contactForm: ContactFormType;
-}
+import { useAppDispatch, useAppSelector } from '../redux/hooks';
 
-export const ContactForm = ({
-	handleSubmitAndSave,
-	handleSubmitAndRedirect,
-	setContactForm,
-	contactForm,
-}: IProps) => {
+export const ContactForm = () => {
+	const [submitting, setSubmitting] = useState(false);
+	const [submittingWithRedirect, setSubmittingWithRedirect] = useState(false);
+
+	const dispatch = useAppDispatch();
+	const navigate = useNavigate();
+
+	const { currentContact } = useAppSelector((state) => state.contact);
+
+	const [contactForm, setContactForm] = useState({
+		firstName: '',
+		lastName: '',
+		email: '',
+		phoneNumber: '',
+		company: '',
+	});
+
+	const handleSubmit = () => {
+		setSubmitting(true);
+
+		dispatch(createContact(contactForm));
+	};
+
+	const handleSubmitAndRedirect = () => {
+		setSubmittingWithRedirect(true);
+
+		dispatch(createContact(contactForm));
+	};
+
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const { name, value } = e.target;
+
 		setContactForm((prev) => ({
 			...prev,
 			[name]: value,
 		}));
 	};
+
+	useEffect(() => {
+		const newUserCreated = submitting && currentContact?.id;
+
+		newUserCreated && navigate(`/contact/${currentContact.id}`);
+
+		return () => setSubmitting(false);
+	}, [currentContact?.id]);
+	useEffect(() => {
+		const newUserCreated = submittingWithRedirect && currentContact?.id;
+
+		newUserCreated && navigate(`/address-form/${currentContact.id}`);
+
+		return () => setSubmittingWithRedirect(false);
+	}, [currentContact?.id]);
+
 	return (
 		<Form>
 			<SubmitButton
-				submitAndSave={handleSubmitAndSave}
+				submitAndSave={handleSubmit}
 				isDiffed={
 					Object.values(contactForm).filter(
 						(inputField) => inputField.length > 0,

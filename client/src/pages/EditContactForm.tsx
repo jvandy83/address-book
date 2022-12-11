@@ -1,38 +1,44 @@
 import React, { useRef, useEffect, useState } from 'react';
 
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
+
+import { useAppDispatch, useAppSelector } from '../redux/hooks';
+
+import {
+	fetchCurrentContact,
+	updateContact,
+} from '../redux/features/contact/contactSlice';
 
 import { Form } from '../components/Form';
 
 import { InputField } from '../components/InputField';
 import { SubmitButton } from '../components/button/SubmitButton';
+import { ContactType } from '~../types/Contact';
 
-import { initialContactResponse } from '../App';
+export const EditContactForm = () => {
+	const [updatedContact, setUpdatedContact] = useState<ContactType>({
+		firstName: '',
+		lastName: '',
+		email: '',
+		id: '',
+		company: '',
+		phoneNumber: '',
+	});
 
-import { ContactFormType } from '../../types/Contact';
-import { ContactResponseType } from '../../types/Contact';
-import axios from 'axios';
+	const dispatch = useAppDispatch();
 
-interface IProps {
-	handleSubmitAndRedirect: () => void;
-	updateContact: () => void;
-	setUpdatedContact: React.Dispatch<React.SetStateAction<ContactFormType>>;
-}
+	const { currentContact } = useAppSelector((state) => state.contact);
 
-export const EditContactForm = ({
-	handleSubmitAndRedirect,
-	updateContact,
-	setUpdatedContact,
-}: IProps) => {
+	const { id } = useParams();
+
+	const navigate = useNavigate();
+
 	const firstNameRef = useRef<HTMLInputElement>(null);
 	const lastNameRef = useRef<HTMLInputElement>(null);
 	const companyRef = useRef<HTMLInputElement>(null);
 	const emailRef = useRef<HTMLInputElement>(null);
 	const phoneNumberRef = useRef<HTMLInputElement>(null);
 
-	const [exisitingContact, setExistingContact] = useState<ContactResponseType>(
-		initialContactResponse,
-	);
 	const [diffState, setDiffState] = useState({
 		firstName: false,
 		lastName: false,
@@ -40,21 +46,27 @@ export const EditContactForm = ({
 		phoneNumber: false,
 	});
 
-	const navigate = useNavigate();
+	const handleSubmit = () => {
+		const data = { updatedContact, id };
+		dispatch(updateContact(data));
+		navigate(`/contact/${id}`);
+	};
+
+	const handleSubmitAndRedirect = () => {
+		const data = { updatedContact, id };
+		dispatch(updateContact(data));
+		navigate(`/edit-address-form/${id}`);
+	};
 
 	const handleRedirectWithoutSubmit = () => {
-		const currentContactId = JSON.parse(
-			localStorage.getItem('current-contact')!,
-		);
-
-		navigate(`/edit-address-form/${currentContactId}`);
+		navigate(`/edit-address-form/${id}`);
 	};
 
 	const checkDiffAndUpdateState = () => {
 		if (firstNameRef.current) {
 			setDiffState((prev) => ({
 				...prev,
-				firstName: firstNameRef.current.value !== exisitingContact.first_name,
+				firstName: firstNameRef.current.value !== currentContact.first_name,
 			}));
 			setUpdatedContact((prev) => ({
 				...prev,
@@ -64,7 +76,7 @@ export const EditContactForm = ({
 		if (lastNameRef.current) {
 			setDiffState((prev) => ({
 				...prev,
-				lastName: lastNameRef.current.value !== exisitingContact.last_name,
+				lastName: lastNameRef.current.value !== currentContact.last_name,
 			}));
 			setUpdatedContact((prev) => ({
 				...prev,
@@ -74,7 +86,7 @@ export const EditContactForm = ({
 		if (companyRef.current) {
 			setDiffState((prev) => ({
 				...prev,
-				company: companyRef.current.value !== exisitingContact.company,
+				company: companyRef.current.value !== currentContact.company,
 			}));
 			setUpdatedContact((prev) => ({
 				...prev,
@@ -84,7 +96,7 @@ export const EditContactForm = ({
 		if (emailRef.current) {
 			setDiffState((prev) => ({
 				...prev,
-				email: emailRef.current.value !== exisitingContact.email,
+				email: emailRef.current.value !== currentContact.email,
 			}));
 			setUpdatedContact((prev) => ({
 				...prev,
@@ -95,7 +107,7 @@ export const EditContactForm = ({
 			setDiffState((prev) => ({
 				...prev,
 				phoneNumber:
-					phoneNumberRef.current.value !== exisitingContact.phone_number,
+					phoneNumberRef.current.value !== currentContact.phone_number,
 			}));
 			setUpdatedContact((prev) => ({
 				...prev,
@@ -110,43 +122,36 @@ export const EditContactForm = ({
 
 	useEffect(() => {
 		if (firstNameRef.current) {
-			firstNameRef.current.value = exisitingContact?.first_name || '';
+			firstNameRef.current.value = currentContact?.first_name || '';
 		}
 		if (lastNameRef.current) {
-			lastNameRef.current.value = exisitingContact?.last_name || '';
+			lastNameRef.current.value = currentContact?.last_name || '';
 		}
 		if (emailRef.current) {
-			emailRef.current.value = exisitingContact?.email || '';
+			emailRef.current.value = currentContact?.email || '';
 		}
 		if (companyRef.current) {
-			companyRef.current.value = exisitingContact?.company || '';
+			companyRef.current.value = currentContact?.company || '';
 		}
 		if (phoneNumberRef.current) {
-			phoneNumberRef.current.value = exisitingContact?.phone_number || '';
+			phoneNumberRef.current.value = currentContact?.phone_number || '';
 		}
 	}, [
-		exisitingContact?.first_name,
-		exisitingContact?.last_name,
-		exisitingContact?.company,
-		exisitingContact?.email,
-		exisitingContact?.phone_number,
+		currentContact?.first_name,
+		currentContact?.last_name,
+		currentContact?.company,
+		currentContact?.email,
+		currentContact?.phone_number,
 	]);
 
 	useEffect(() => {
-		const currentUserId = JSON.parse(localStorage.getItem('current-contact')!);
-		currentUserId &&
-			axios
-				.get(`${process.env.REACT_APP_BASE_URL}/persons/${currentUserId}`)
-				.then((res) => {
-					const { data } = res;
-					setExistingContact(data.contact);
-				});
+		dispatch(fetchCurrentContact(id));
 	}, []);
 
 	return (
 		<Form>
 			<SubmitButton
-				submitAndSave={updateContact}
+				submitAndSave={handleSubmit}
 				isDiffed={
 					Object.values(diffState).filter((val) => val !== false).length > 0
 				}

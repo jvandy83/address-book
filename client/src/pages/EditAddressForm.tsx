@@ -1,38 +1,73 @@
 import React, { useRef, useState, useEffect } from 'react';
 
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
+
+import { updateAddress } from '../redux/features/address/addressSlice';
+
 import { InputField } from '../components/InputField';
 import { Form } from '../components/Form';
 import { SubmitButton } from '../components/button/SubmitButton';
 
-import { initialAddressResponseState } from '../App';
+import { fetchAddress } from '../redux/features/address/addressSlice';
 
-import { AddressFormType } from '../../types/AddressForm';
+import { useAppDispatch, useAppSelector } from '../redux/hooks';
 
-import axios from 'axios';
+const setCurrentAddressValues = ({
+	streetRef,
+	cityRef,
+	zipCodeRef,
+	stateRef,
+	address,
+}) => {
+	if (streetRef.current) {
+		streetRef.current.value = address?.street || '';
+	}
+	if (cityRef.current) {
+		cityRef.current.value = address?.city || '';
+	}
+	if (zipCodeRef.current) {
+		zipCodeRef.current.value = address?.zip_code || '';
+	}
+	if (stateRef.current) {
+		stateRef.current.value = address?.state_initials || '';
+	}
+};
 
-interface IProps {
-	setUpdatedAddress: React.Dispatch<React.SetStateAction<AddressFormType>>;
-	updateAddress: () => void;
-}
+export const EditAddressForm = () => {
+	const { id } = useParams();
 
-export const EditAddressForm = ({
-	setUpdatedAddress,
-	updateAddress,
-}: IProps) => {
+	const dispatch = useAppDispatch();
+
+	const navigate = useNavigate();
+	const location = useLocation();
+
+	const { address } = useAppSelector((state) => state);
+	const { currentContact } = useAppSelector((state) => state.contact);
+
 	const streetRef = useRef<HTMLInputElement>(null);
 	const cityRef = useRef<HTMLInputElement>(null);
 	const zipCodeRef = useRef<HTMLInputElement>(null);
 	const stateRef = useRef<HTMLInputElement>(null);
 
-	const [existingAddress, setExisitngAddress] = useState(
-		initialAddressResponseState,
-	);
+	const [updatedAddress, setUpdatedAddress] = useState({
+		street: '',
+		city: '',
+		zipCode: '',
+		stateInitials: '',
+	});
+
 	const [diffState, setDiffedState] = useState({
 		city: false,
 		state: false,
 		zipCode: false,
 		street: false,
 	});
+
+	const handleUpdate = () => {
+		const updates = { ...updatedAddress, personId: id };
+		dispatch(updateAddress(updates));
+		navigate(`/contact/${id}`, { state: { from: location } });
+	};
 
 	const checkDiffAndUpdateState = () => {
 		if (streetRef.current) {
@@ -42,7 +77,7 @@ export const EditAddressForm = ({
 			}));
 			setDiffedState((prev) => ({
 				...prev,
-				street: streetRef.current.value !== existingAddress?.street,
+				street: streetRef.current.value !== address?.street,
 			}));
 		}
 		if (cityRef.current) {
@@ -52,7 +87,7 @@ export const EditAddressForm = ({
 			}));
 			setDiffedState((prev) => ({
 				...prev,
-				city: cityRef.current.value !== existingAddress?.city,
+				city: cityRef.current.value !== address?.city,
 			}));
 		}
 		if (zipCodeRef.current) {
@@ -62,7 +97,7 @@ export const EditAddressForm = ({
 			}));
 			setDiffedState((prev) => ({
 				...prev,
-				zipCode: zipCodeRef.current.value !== existingAddress?.zip_code,
+				zipCode: zipCodeRef.current.value !== address?.zip_code,
 			}));
 		}
 		if (stateRef.current) {
@@ -72,7 +107,7 @@ export const EditAddressForm = ({
 			}));
 			setDiffedState((prev) => ({
 				...prev,
-				state: stateRef.current.value !== existingAddress?.state_initials,
+				state: stateRef.current.value !== address?.state_initials,
 			}));
 		}
 	};
@@ -82,43 +117,23 @@ export const EditAddressForm = ({
 	};
 
 	useEffect(() => {
-		if (streetRef.current) {
-			streetRef.current.value = existingAddress?.street || '';
-		}
-		if (cityRef.current) {
-			cityRef.current.value = existingAddress?.city || '';
-		}
-		if (zipCodeRef.current) {
-			zipCodeRef.current.value = existingAddress?.zip_code || '';
-		}
-		if (stateRef.current) {
-			stateRef.current.value = existingAddress?.state_initials || '';
-		}
-	}, [
-		existingAddress?.street,
-		existingAddress?.city,
-		existingAddress?.zip_code,
-		existingAddress?.state_initials,
-	]);
+		dispatch(fetchAddress(id));
+		setCurrentAddressValues({
+			streetRef,
+			stateRef,
+			cityRef,
+			zipCodeRef,
+			address,
+		});
+	}, [streetRef.current, cityRef.current, zipCodeRef.current]);
 
-	useEffect(() => {
-		const currentContactId = JSON.parse(
-			localStorage.getItem('current-contact')!,
-		);
-		axios
-			.get(`${process.env.REACT_APP_BASE_URL}/address/${currentContactId}`)
-			.then((res) => {
-				const { data } = res;
-				setExisitngAddress(data.address);
-			});
-	}, []);
 	return (
 		<Form>
 			<SubmitButton
 				isDiffed={
 					Object.values(diffState).filter((val) => val !== false).length > 0
 				}
-				submitAndSave={updateAddress}
+				submitAndSave={handleUpdate}
 			/>
 			<InputField
 				ref={zipCodeRef}
