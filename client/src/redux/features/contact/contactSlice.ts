@@ -113,6 +113,27 @@ export const deleteContact = createAsyncThunk(
 	},
 );
 
+export const addProfilePicture = createAsyncThunk(
+	'contacts/addProfilePicture',
+	async (data: any, thunkAPI) => {
+		try {
+			await contactApi.addProfilePicture(data);
+		} catch (error) {
+			console.error(error);
+		}
+	},
+);
+export const updateProfilePicture = createAsyncThunk(
+	'contacts/updateProfilePicture',
+	async (data: any, thunkAPI) => {
+		try {
+			await contactApi.updateProfilePicture(data);
+		} catch (error) {
+			console.error(error);
+		}
+	},
+);
+
 export const contactSlice = createSlice({
 	name: 'contact',
 	// `createSlice` will infer the state type from the `initialState` argument

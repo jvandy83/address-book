@@ -67,6 +67,24 @@ const fetchCurrentContact = async (id: string) => {
 	return data.contact;
 };
 
+const addProfilePicture = async (updates: any) => {
+	const { url, id } = updates;
+	const { data } = await axios.put(
+		`${process.env.REACT_APP_BASE_URL}/person/${id}`,
+		{ profilePicture: url },
+	);
+	console.log(data);
+};
+
+const updateProfilePicture = async (updates: any) => {
+	const { url, id } = updates;
+	const { data } = await axios.put(
+		`${process.env.REACT_APP_BASE_URL}/person/${id}`,
+		{ profilePicture: url },
+	);
+	console.log(data);
+};
+
 const contactApi = {
 	fetchCurrentContact,
 	fetchContacts,
@@ -74,6 +92,8 @@ const contactApi = {
 	createContact,
 	updateContact,
 	deleteContact,
+	addProfilePicture,
+	updateProfilePicture,
 };
 
 export default contactApi;

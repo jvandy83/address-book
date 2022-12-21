@@ -3,6 +3,7 @@
 		"jsx": "react",
 		"esModuleInterop": true,
 		"baseUrl": "./src",
+		"lib": ["es2019", "dom", "dom.iterable"],
 		"paths": {
 			"~*": ["./*"]
 		}

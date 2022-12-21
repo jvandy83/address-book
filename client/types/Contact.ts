@@ -4,6 +4,7 @@ export type ContactType = {
 	email: string;
 	phoneNumber: string;
 	company: string;
+	profilePicture?: string;
 	id: string;
 };
 
@@ -13,6 +14,7 @@ export type ContactFormType = {
 	email: string;
 	phoneNumber: string;
 	company: string;
+	profilePicture: string;
 };
 
 export type ContactResponseType = {
@@ -20,6 +22,7 @@ export type ContactResponseType = {
 	last_name: string;
 	email: string;
 	phone_number: string;
+	profile_picture?: string;
 	company: string;
 	id: string;
 };
@@ -29,6 +32,7 @@ export type ContactWithAddress = {
 	last_name: string;
 	email: string;
 	phone_number: string;
+	profile_picture?: string;
 	company: string;
 	id: string;
 	street: string;

@@ -13,8 +13,6 @@ import { ContactList } from './pages/ContactList';
 
 import { Layout } from './components/Layout';
 
-import { ContactsWithAddresses } from '../types/ContactWithAddress';
-
 import { fetchCurrentContact } from './redux/features/contact/contactSlice';
 
 export const App = () => {
@@ -34,12 +32,7 @@ export const App = () => {
 				<Route path='/edit-address-form/:id' element={<EditAddressForm />} />
 				<Route path='/address-form/:id' element={<AddressForm />} />
 				<Route path='/contact/:id' element={<Contact />} />
-				<Route
-					path='/'
-					element={
-						<ContactList />
-					}
-				/>
+				<Route path='/' element={<ContactList />} />
 			</Route>
 		</Routes>
 	);

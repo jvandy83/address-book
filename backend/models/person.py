@@ -11,6 +11,7 @@ class Person(db.Model):
   email = Column(String(100))
   company = Column(String(50))
   phone_number = Column(String(20)) 
+  profile_picture = Column(String(100))
   address = relationship('Address', back_populates='person', cascade='all, delete', passive_deletes=True) 
   
   def to_dict(self):
@@ -20,6 +21,7 @@ class Person(db.Model):
       'email': self.email,
       'phone_number': self.phone_number,
       'company': self.company,
+      'profile_picture': self.profile_picture,
       'id': self.id,
     }
  

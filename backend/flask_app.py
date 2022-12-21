@@ -1,14 +1,22 @@
-from flask import Flask, request, make_response
+import os
 
-from sqlalchemy import or_, and_, outerjoin
+from urllib.parse import urlparse
+
+from flask import Flask, request
 
 from flask_cors import CORS
+
+import logging
+
+import boto3
+
+from botocore.exceptions import ClientError
 
 app = Flask(__name__) 
 
 CORS(app)
 
-app.config.from_object("config.Config")
+app.config.from_object("config.DevConfig")
 
 from db import save, commit, enable_foreign_keys, db
 
@@ -18,6 +26,17 @@ from utils.convert_camel_case import convert_person_to_snake_case, convert_addre
 from models.person import Person
 from models.address import Address
 
+s3_client = boto3.client(
+  "s3",
+  aws_access_key_id= app.config['AWS_KEY'],
+  aws_secret_access_key= app.config['AWS_SECRET']
+)
+
+s3_resource = boto3.resource(
+  "s3",
+  aws_access_key_id= app.config['AWS_KEY'],
+  aws_secret_access_key= app.config['AWS_SECRET']
+)
 
 # foreign keys must be 
 # enabled for sqlite 
@@ -84,12 +103,9 @@ def create_person():
 def update_person(id):
   create_or_update = convert_person_to_snake_case(request.json)
 
-  print('create_or_update: ', create_or_update)
-
   updates = create_or_update['updates']
 
   person = Person.query.filter(Person.id == id).update(updates)
-  print('person: ', person)
 
   commit()
 
@@ -157,6 +173,22 @@ def delete_address(person_id):
 
   return { 'msg': 'address and person deleted!' }
 
+@app.route("/api/contact/profile-picture", methods = ['POST'])
+def delete_profile_picture():
+  S3_BUCKET = app.config['S3_BUCKET']
+  parsed_url = urlparse(request.json['url'])
+  
+  final_url = parsed_url.path.replace('/', '')
+  
+  existingObject = s3_resource.Object(bucket_name = S3_BUCKET, key = final_url )
+
+  if existingObject is not None:
+    existingObject.delete()
+
+    return { 'msg': f'{final_url} file has been deleted' }
+
+  return { 'msg': 'could not find file in s3 bucket'}
+
 # GET /search
 @app.route("/api/search", methods=['POST'])
 def search():
@@ -174,6 +206,42 @@ def search():
   
   print(results)
   return { 'msg': 'ok', 'matches': results }
+
+@app.route('/api/sign-s3')
+def sign_s3():
+  S3_BUCKET = app.config['S3_BUCKET']
+  
+  file_name = request.args.get('file_name')
+  file_type = request.args.get('file_type')
+
+  try:
+    existingObj = s3_resource.Object(bucket_name = S3_BUCKET, key = file_name)
+
+    if existingObj is not None:
+      print('object exists!!!!!')
+  except ClientError as e:
+    logging.error(e)
+
+
+  try:
+    response = s3_client.generate_presigned_post(
+    Bucket = S3_BUCKET,
+    Key = file_name,
+    Fields = { 'acl': 'public-read', 'Content-Type': file_type },
+    Conditions = [
+      {'acl': 'public-read'},
+      {'Content-Type': file_type}
+    ],
+    ExpiresIn = 360
+  )
+  except ClientError as e:
+    logging.error(e)
+
+  return {
+    'data': response,
+    'url': 'https://%s.s3.%s.amazonaws.com/%s' % (S3_BUCKET, app.config['S3_REGION'], file_name)
+  }
+  
 
 if __name__ == '__main__':
   app.run(host='0.0.0.0')

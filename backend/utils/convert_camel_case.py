@@ -16,6 +16,9 @@ def convert_person_to_snake_case(content):
 
   if 'company' in content:
     converted_values['company'] = content['company']
+    
+  if 'profilePicture' in content:
+    converted_values['profile_picture'] = content['profilePicture']
 
   def create(Person):
     person = Person(**converted_values)
